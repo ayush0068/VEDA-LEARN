@@ -1,0 +1,93 @@
+@import "tailwindcss";
+
+/* Design tokens (replaces tailwind.config.ts in Tailwind v4) */
+@theme {
+  --color-ivory: #fffaf0;
+  --color-cream: #fbf1dd;
+  --color-cream-deep: #f5e3bf;
+  --color-veda-brown: #5a2d0f;
+  --color-veda-bark: #3e1f0b;
+  --color-veda-text: #4b4036;
+  --color-veda-muted: #7c6a58;
+  --color-gold: #c58b2b;
+  --color-gold-soft: #e3c285;
+  --color-gold-pale: #f1dfb4;
+  --color-saffron: #c26a1b;
+
+  --font-display: "Playfair Display", Georgia, "Times New Roman", serif;
+  --font-sans: Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-deva: "Noto Serif Devanagari", "Nirmala UI", Mangal, serif;
+
+  --shadow-soft: 0 10px 30px -12px rgba(90, 45, 15, 0.25);
+
+  --animate-fade-in: fade-in 0.2s ease-out;
+  --animate-rise-in: rise-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  /* trust bar marquee: bigger seconds = slower (~40px/s is easy to read) */
+  --animate-trust: trust-scroll 85s linear infinite;
+  --animate-trust-sm: trust-scroll 70s linear infinite;
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes trust-scroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  @keyframes rise-in {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-ivory font-sans text-veda-text antialiased;
+  }
+  :focus-visible {
+    outline: 2px solid #c58b2b;
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-medium transition-colors duration-200;
+  }
+  /* v4: custom classes can't be @apply'd, so utilities are repeated here */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-medium transition-colors duration-200 bg-veda-brown text-ivory shadow-soft hover:bg-veda-bark;
+  }
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-medium transition-colors duration-200 border border-veda-brown/70 bg-transparent text-veda-brown hover:bg-veda-brown hover:text-ivory;
+  }
+}
+
+@layer utilities {
+  /* soft blend of the illustration into the cream background */
+  .hero-art {
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 28%);
+    mask-image: linear-gradient(to bottom, transparent 0%, #000 28%);
+  }
+  @media (min-width: 1024px) {
+    .hero-art {
+      -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 32%);
+      mask-image: linear-gradient(to right, transparent 0%, #000 32%);
+    }
+  }
+}
