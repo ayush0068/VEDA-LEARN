@@ -1,26 +1,23 @@
-import mongoose from 'mongoose';
-import { env } from './env';
+const mongoose = require('mongoose');
+const { env } = require('./env');
 
-export type DbState = 'disconnected' | 'connected' | 'connecting' | 'disconnecting' | 'unknown';
-
-const READY_STATES: Record<number, DbState> = {
+const READY_STATES = {
   0: 'disconnected',
   1: 'connected',
   2: 'connecting',
   3: 'disconnecting',
 };
 
-export const getDbState = (): DbState => READY_STATES[mongoose.connection.readyState] ?? 'unknown';
+const getDbState = () => READY_STATES[mongoose.connection.readyState] || 'unknown';
 
-export const connectDB = async (): Promise<boolean> => {
+const connectDB = async () => {
   try {
     mongoose.set('strictQuery', true);
     await mongoose.connect(env.mongoUri, { serverSelectionTimeoutMS: 5000 });
     console.log(`[db] MongoDB connected (${mongoose.connection.name})`);
     return true;
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    console.error(`[db] MongoDB connection failed: ${message}`);
+    console.error(`[db] MongoDB connection failed: ${error.message}`);
     if (env.mongoRequired) {
       console.error('[db] MONGODB_REQUIRED=true -> shutting down.');
       process.exit(1);
@@ -30,8 +27,10 @@ export const connectDB = async (): Promise<boolean> => {
   }
 };
 
-export const disconnectDB = async (): Promise<void> => {
+const disconnectDB = async () => {
   if (mongoose.connection.readyState !== 0) {
     await mongoose.disconnect();
   }
 };
+
+module.exports = { connectDB, disconnectDB, getDbState };

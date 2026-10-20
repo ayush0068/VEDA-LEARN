@@ -1,8 +1,8 @@
-import type { Request, Response } from 'express';
-import { getDbState } from '../config/db';
-import { env } from '../config/env';
+const { getDbState } = require('../config/db');
+const { env } = require('../config/env');
 
-export const getHealth = (_req: Request, res: Response): void => {
+// GET /api/health
+const getHealth = (_req, res) => {
   res.status(200).json({
     success: true,
     status: 'ok',
@@ -13,3 +13,5 @@ export const getHealth = (_req: Request, res: Response): void => {
     database: getDbState(),
   });
 };
+
+module.exports = { getHealth };

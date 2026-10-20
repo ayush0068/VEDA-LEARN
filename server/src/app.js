@@ -1,10 +1,11 @@
-import cors from 'cors';
-import express from 'express';
-import helmet from 'helmet';
-import morgan from 'morgan';
-import { env } from './config/env';
-import { errorHandler, notFound } from './middleware/errorHandler';
-import apiRoutes from './routes';
+const cors = require('cors');
+const express = require('express');
+const helmet = require('helmet');
+const morgan = require('morgan');
+const { env } = require('./config/env');
+const { errorHandler, notFound } = require('./middleware/errorHandler');
+const apiRoutes = require('./routes');
+const ApiError = require('./utils/ApiError');
 
 const app = express();
 
@@ -14,7 +15,7 @@ app.use(
     origin: (origin, callback) => {
       // allow tools without Origin (curl, Postman) and whitelisted frontends
       if (!origin || env.clientUrls.includes(origin)) return callback(null, true);
-      return callback(new Error(`CORS blocked for origin: ${origin}`));
+      return callback(new ApiError(403, `CORS blocked for origin: ${origin}`));
     },
     credentials: true,
   }),
@@ -32,4 +33,4 @@ app.use('/api', apiRoutes);
 app.use(notFound);
 app.use(errorHandler);
 
-export default app;
+module.exports = app;

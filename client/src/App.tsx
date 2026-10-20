@@ -9,12 +9,18 @@ export default function App() {
       <Route element={<MainLayout />}>
         <Route index element={<Home />} />
         <Route path="courses" element={<PlaceholderPage title="Courses" />} />
+        <Route path="courses/:slug" element={<PlaceholderPage title="Course Details" />} />
         <Route path="live-classes" element={<PlaceholderPage title="Live Classes" />} />
         <Route path="about" element={<PlaceholderPage title="About" />} />
         <Route path="contact" element={<PlaceholderPage title="Contact" />} />
         <Route path="login" element={<PlaceholderPage title="Login" />} />
         <Route path="register" element={<PlaceholderPage title="Join VedaLearn" />} />
         <Route path="cart" element={<PlaceholderPage title="Your Cart" />} />
+        <Route path="faq" element={<PlaceholderPage title="FAQ" />} />
+        <Route path="terms" element={<PlaceholderPage title="Terms & Conditions" />} />
+        <Route path="privacy" element={<PlaceholderPage title="Privacy Policy" />} />
+        <Route path="refund-policy" element={<PlaceholderPage title="Refund Policy" />} />
+        <Route path="support" element={<PlaceholderPage title="Support" />} />
         <Route path="*" element={<PlaceholderPage title="Page not found" />} />
       </Route>
     </Routes>
