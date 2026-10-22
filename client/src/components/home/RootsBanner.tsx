@@ -2,7 +2,6 @@ import { ArrowRight, Award, MessagesSquare, Smartphone, Video } from 'lucide-rea
 import type { LucideIcon } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import Mandala from '@/components/common/Mandala';
 import { ROOTS_BANNER_SRC } from '@/constants/assets';
 
 const HIGHLIGHTS: { icon: LucideIcon; label: string }[] = [
@@ -39,7 +38,6 @@ export default function RootsBanner() {
       <div className="absolute inset-0 -z-10 lg:hidden" style={{ backgroundImage: FADE_MOBILE }} aria-hidden />
       <div className="absolute inset-0 -z-10 hidden lg:block" style={{ backgroundImage: FADE_DESKTOP }} aria-hidden />
 
-      <Mandala className="pointer-events-none absolute -right-24 top-1/2 -z-10 hidden h-[22rem] w-[22rem] -translate-y-1/2 text-gold/35 md:block" />
 
       <div className="mx-auto grid max-w-7xl items-center gap-8 px-4 py-12 sm:px-6 lg:grid-cols-[0.8fr_1.3fr_0.9fr] lg:gap-6 lg:px-8 lg:py-14">
         {/* empty column so the photo stays visible on the left (desktop) */}

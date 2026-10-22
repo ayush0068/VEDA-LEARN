@@ -1,4 +1,4 @@
-import { Send } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { FormEvent, useId, useState } from 'react';
 import { subscribeToNewsletter } from '@/services/newsletter.service';
 
@@ -48,7 +48,7 @@ export default function NewsletterForm() {
           aria-label="Subscribe"
           className="flex w-11 shrink-0 items-center justify-center bg-veda-brown text-ivory transition-colors hover:bg-saffron disabled:opacity-60"
         >
-          <Send size={16} aria-hidden />
+          <ArrowRight size={16} aria-hidden />
         </button>
       </div>
       <p

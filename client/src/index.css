@@ -25,10 +25,16 @@
   /* trust bar marquee: bigger seconds = slower (~40px/s is easy to read) */
   --animate-trust: trust-scroll 85s linear infinite;
   --animate-trust-sm: trust-scroll 70s linear infinite;
+  /* footer mandala: one full clockwise turn every 200s */
+  --animate-spin-slow: spin-slow 200s linear infinite;
 
   @keyframes fade-in {
     from { opacity: 0; }
     to { opacity: 1; }
+  }
+  @keyframes spin-slow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
   }
   @keyframes trust-scroll {
     from { transform: translateX(0); }
