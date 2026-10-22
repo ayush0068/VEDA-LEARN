@@ -1,5 +1,6 @@
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import SectionMandalas from '@/components/common/SectionMandalas';
 import { usePopularCourses } from '@/hooks/usePopularCourses';
 import CourseCard from './CourseCard';
 
@@ -7,8 +8,9 @@ export default function PopularCourses() {
   const { courses } = usePopularCourses(4);
 
   return (
-    <section className="bg-ivory py-14 sm:py-20" aria-labelledby="popular-heading">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <section className="relative overflow-hidden py-14 sm:py-20" aria-labelledby="popular-heading">
+      <SectionMandalas sides="left" />
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex items-end justify-between gap-4">
           <div>
             <h2 id="popular-heading" className="font-display text-3xl font-semibold text-veda-bark sm:text-4xl">
@@ -19,7 +21,7 @@ export default function PopularCourses() {
 
           <Link
             to="/courses"
-            className="group inline-flex shrink-0 items-center gap-1.5 text-sm font-medium text-veda-brown hover:text-saffron"
+            className="group inline-flex shrink-0 items-center gap-1.5 rounded-full border border-veda-brown/20 px-3.5 py-1.5 text-sm font-medium text-veda-brown transition-all duration-200 hover:border-saffron/50 hover:bg-saffron/10 hover:text-saffron"
           >
             View All <span className="hidden sm:inline">Courses</span>
             <ArrowRight size={15} className="transition-transform group-hover:translate-x-1" aria-hidden />

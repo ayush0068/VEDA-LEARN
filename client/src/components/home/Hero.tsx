@@ -64,14 +64,26 @@ export default function Hero() {
             place.
           </p>
 
+
           <div className="mt-8 flex flex-wrap gap-3">
-            <Link to="/courses" className="btn-primary px-6 py-3">
-              Explore Courses <ArrowRight size={16} aria-hidden />
+            <Link
+              to="/courses"
+              className="btn-primary inline-flex items-center gap-2 rounded-full px-6 py-3 transition-all duration-200 hover:-translate-y-0.5"
+            >
+              Explore Courses
+              <ArrowRight size={16} aria-hidden="true" />
             </Link>
-            <button type="button" onClick={() => setIntroOpen(true)} className="btn-outline bg-ivory/60 px-6 py-3">
-              <PlayCircle size={17} aria-hidden /> Watch Intro
+
+            <button
+              type="button"
+              onClick={() => setIntroOpen(true)}
+              className="btn-outline inline-flex items-center gap-2 rounded-full bg-ivory/60 px-6 py-3 transition-all duration-200 hover:-translate-y-0.5"
+            >
+              <PlayCircle size={17} aria-hidden="true" />
+              Watch Intro
             </button>
           </div>
+
 
           <ul className="mt-10 grid max-w-md grid-cols-1 gap-4 sm:grid-cols-3">
             {BENEFITS.map(({ icon: Icon, label }) => (

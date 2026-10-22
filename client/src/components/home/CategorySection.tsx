@@ -1,5 +1,6 @@
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import SectionMandalas from '@/components/common/SectionMandalas';
 import { LotusMark } from '@/components/common/Logo';
 import { useCategories } from '@/hooks/useCategories';
 import CategoryCard from './CategoryCard';
@@ -8,8 +9,9 @@ export default function CategorySection() {
   const { categories } = useCategories();
 
   return (
-    <section className="bg-cream/60 py-14 sm:py-20" aria-labelledby="categories-heading">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <section className="relative overflow-hidden bg-cream/60 py-14 sm:py-20" aria-labelledby="categories-heading">
+      <SectionMandalas sides="right" />
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex items-end justify-between gap-4">
           <div>
             <p className="text-xs font-medium tracking-[0.22em] text-saffron">EXPLORE OUR</p>
@@ -22,13 +24,18 @@ export default function CategorySection() {
             </div>
           </div>
 
-          <Link
+
+            <Link
             to="/courses"
-            className="group inline-flex shrink-0 items-center gap-1.5 text-sm font-medium text-veda-brown hover:text-saffron"
-          >
+            className="group inline-flex shrink-0 items-center gap-1.5 rounded-full border border-veda-brown/20 px-3.5 py-1.5 text-sm font-medium text-veda-brown transition-all duration-200 hover:border-saffron/50 hover:bg-saffron/10 hover:text-saffron"
+            >
             View All <span className="hidden sm:inline">Categories</span>
-            <ArrowRight size={15} className="transition-transform group-hover:translate-x-1" aria-hidden />
-          </Link>
+            <ArrowRight
+                size={15}
+                className="transition-transform duration-200 group-hover:translate-x-1"
+                aria-hidden="true"
+            />
+            </Link>
         </div>
 
         {/* mobile: swipeable row, tablet: 3 columns, desktop: 5 columns */}

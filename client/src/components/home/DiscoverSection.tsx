@@ -1,4 +1,4 @@
-import Mandala from '@/components/common/Mandala';
+import SectionMandalas from '@/components/common/SectionMandalas';
 import SectionHeading from '@/components/common/SectionHeading';
 import { getIcon } from '@/constants/icons';
 import { useFeatures } from '@/hooks/useFeatures';
@@ -7,11 +7,8 @@ export default function DiscoverSection() {
   const { features } = useFeatures();
 
   return (
-    <section className="relative overflow-hidden bg-ivory py-14 sm:py-20" aria-labelledby="discover-heading">
-      {/* decorative mandalas (desktop only) */}
-      <Mandala className="pointer-events-none absolute -left-40 top-1/2 hidden h-[24rem] w-[24rem] -translate-y-1/2 text-gold/30 md:block" />
-      <Mandala className="pointer-events-none absolute -right-40 top-1/2 hidden h-[24rem] w-[24rem] -translate-y-1/2 text-gold/30 md:block" />
-
+    <section className="relative overflow-hidden py-14 sm:py-20" aria-labelledby="discover-heading">
+      <SectionMandalas sides="left" />
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
           id="discover-heading"

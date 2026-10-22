@@ -5,12 +5,12 @@ import FooterColumn from '@/components/footer/FooterColumn';
 import NewsletterForm from '@/components/footer/NewsletterForm';
 import { SOCIAL_ICONS } from '@/components/footer/SocialIcons';
 import { FOOTER_HELP_LINKS, FOOTER_QUICK_LINKS, SITE, SOCIAL_LINKS } from '@/constants/site';
-import { useCategories } from '@/hooks/useCategories';
-
+/* import { useCategories } from '@/hooks/useCategories';
+ */
 const linkClass = 'text-[0.85rem] text-ivory/70 transition-colors hover:text-gold-soft';
 
 export default function Footer() {
-  const { categories } = useCategories();
+  /* const { categories } = useCategories(); */
 
   return (
     <footer className="relative isolate overflow-hidden bg-veda-bark text-ivory" aria-label="Site footer">
@@ -62,7 +62,7 @@ export default function Footer() {
             </FooterColumn>
           </div>
 
-          <div className="md:col-span-2 lg:col-span-2">
+          {/* <div className="md:col-span-2 lg:col-span-2">
             <FooterColumn title="Course Categories">
               <ul className="space-y-2.5">
                 {categories.map((category) => (
@@ -74,7 +74,7 @@ export default function Footer() {
                 ))}
               </ul>
             </FooterColumn>
-          </div>
+          </div> */}
 
           <div className="md:col-span-2 lg:col-span-2">
             <FooterColumn title="Help">
