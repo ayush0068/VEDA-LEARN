@@ -8,3 +8,7 @@ export const formatCount = (value: number): string => {
   const k = value / 1000;
   return `${Number.isInteger(k) ? k : k.toFixed(1)}K`;
 };
+
+/** 2499 / 1499 -> 40 (percent off), or 0 when there is no discount */
+export const discountPercent = (price: number, originalPrice?: number): number =>
+  originalPrice && originalPrice > price ? Math.round((1 - price / originalPrice) * 100) : 0;

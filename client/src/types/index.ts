@@ -48,4 +48,11 @@ export interface Course {
   originalPrice?: number;
   badge?: string;
   order?: number;
+  // Courses page (all optional, so older API responses still work)
+  description?: string;
+  weeks?: number;
+  lessons?: number;
+  level?: string; // Beginner | Intermediate | Advanced | All Levels
+  language?: string; // English | Hindi
+  createdAt?: string; // ISO date, used by "Newest"
 }
