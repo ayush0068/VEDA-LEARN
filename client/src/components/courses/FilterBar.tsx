@@ -6,8 +6,8 @@ import {
   LEVEL_OPTIONS,
   PRICE_OPTIONS,
   SORT_OPTIONS,
-} from '@/constants/courseCatalog';
-import type { Option } from '@/constants/courseCatalog';
+} from '../../constants/courseCatalog';
+import type { Option } from '../../constants/courseCatalog';
 
 export interface Filters {
   query: string;

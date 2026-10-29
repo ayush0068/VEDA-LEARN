@@ -27,6 +27,12 @@ export interface ApiListResponse<T> {
   data: T[];
 }
 
+export interface ApiItemResponse<T> {
+  success: boolean;
+  message?: string;
+  data: T;
+}
+
 export interface Category {
   slug: string;
   name: string;
@@ -55,4 +61,18 @@ export interface Course {
   level?: string; // Beginner | Intermediate | Advanced | All Levels
   language?: string; // English | Hindi
   createdAt?: string; // ISO date, used by "Newest"
+}
+
+// Auth
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: 'student' | 'admin';
+  createdAt?: string;
+}
+
+export interface AuthPayload {
+  user: User;
+  token: string;
 }

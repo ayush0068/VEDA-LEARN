@@ -2,11 +2,17 @@ import { Route, Routes } from 'react-router-dom';
 import MainLayout from '@/components/layout/MainLayout';
 import Courses from '@/pages/Courses';
 import Home from '@/pages/Home';
+import Login from '@/pages/Login';
 import PlaceholderPage from '@/pages/PlaceholderPage';
+import Register from '@/pages/Register';
 
 export default function App() {
   return (
     <Routes>
+      {/* Login / Register have their own full-screen layout (no navbar / footer) */}
+      <Route path="login" element={<Login />} />
+      <Route path="register" element={<Register />} />
+
       <Route element={<MainLayout />}>
         <Route index element={<Home />} />
         <Route path="courses" element={<Courses />} />
@@ -14,8 +20,9 @@ export default function App() {
         <Route path="live-classes" element={<PlaceholderPage title="Live Classes" />} />
         <Route path="about" element={<PlaceholderPage title="About" />} />
         <Route path="contact" element={<PlaceholderPage title="Contact" />} />
-        <Route path="login" element={<PlaceholderPage title="Login" />} />
-        <Route path="register" element={<PlaceholderPage title="Join VedaLearn" />} />
+        <Route path="forgot-password" element={<PlaceholderPage title="Reset Password" />} />
+        <Route path="profile" element={<PlaceholderPage title="My Profile" />} />
+        <Route path="dashboard" element={<PlaceholderPage title="My Dashboard" />} />
         <Route path="cart" element={<PlaceholderPage title="Your Cart" />} />
         <Route path="faq" element={<PlaceholderPage title="FAQ" />} />
         <Route path="terms" element={<PlaceholderPage title="Terms & Conditions" />} />

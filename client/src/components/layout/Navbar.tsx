@@ -1,9 +1,9 @@
-
-import { Menu, Search, ShoppingCart, X } from 'lucide-react';
+import { LayoutDashboard, LogOut, Menu, Search, ShoppingCart, UserRound, X } from 'lucide-react';
 import { FormEvent, useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import Logo from '@/components/common/Logo';
 import { NAV_ITEMS } from '@/constants/navigation';
+import { useAuth } from '@/context/AuthContext';
 
 interface NavbarProps {
   cartCount?: number;
@@ -14,10 +14,20 @@ export default function Navbar({ cartCount = 0 }: NavbarProps) {
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [isScrolled, setIsScrolled] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const userMenuRef = useRef<HTMLDivElement>(null);
 
   const searchRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, logout } = useAuth();
+  const initials = (user?.name ?? '')
+    .split(' ')
+    .filter(Boolean)
+    .map((part) => part[0])
+    .slice(0, 2)
+    .join('')
+    .toUpperCase();
 
   // Detect scroll position
   useEffect(() => {
@@ -35,6 +45,7 @@ export default function Navbar({ cartCount = 0 }: NavbarProps) {
   useEffect(() => {
     setMobileOpen(false);
     setSearchOpen(false);
+    setUserMenuOpen(false);
   }, [location.pathname]);
 
   useEffect(() => {
@@ -46,12 +57,34 @@ export default function Navbar({ cartCount = 0 }: NavbarProps) {
       if (e.key === 'Escape') {
         setSearchOpen(false);
         setMobileOpen(false);
+        setUserMenuOpen(false);
       }
     };
 
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, []);
+
+  // close the avatar menu when clicking anywhere else
+  useEffect(() => {
+    if (!userMenuOpen) return;
+
+    const onPointerDown = (e: MouseEvent | TouchEvent) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) setUserMenuOpen(false);
+    };
+
+    document.addEventListener('mousedown', onPointerDown);
+    document.addEventListener('touchstart', onPointerDown);
+    return () => {
+      document.removeEventListener('mousedown', onPointerDown);
+      document.removeEventListener('touchstart', onPointerDown);
+    };
+  }, [userMenuOpen]);
+
+  // signed out while the menu is open -> close it
+  useEffect(() => {
+    if (!user) setUserMenuOpen(false);
+  }, [user]);
 
   const onSearch = (e: FormEvent) => {
     e.preventDefault();
@@ -129,19 +162,84 @@ export default function Navbar({ cartCount = 0 }: NavbarProps) {
             )}
           </Link>
 
-          <Link
-            to="/login"
-            className="btn-outline hidden rounded-full px-5 py-2 transition-all duration-200 hover:-translate-y-0.5 sm:inline-flex"
-          >
-            Login
-          </Link>
+          {user ? (
+            <div ref={userMenuRef} className="relative">
+              <button
+                type="button"
+                onClick={() => setUserMenuOpen((v) => !v)}
+                aria-label="Account menu"
+                aria-haspopup="menu"
+                aria-expanded={userMenuOpen}
+                className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-gold/60 bg-veda-brown text-[0.85rem] font-semibold tracking-wide text-ivory transition-all duration-200 hover:-translate-y-0.5 hover:border-gold hover:bg-veda-bark"
+              >
+                {initials || <UserRound size={18} aria-hidden />}
+              </button>
 
-          <Link
-            to="/register"
-            className="btn-primary hidden rounded-full px-5 py-2 transition-all duration-200 hover:-translate-y-0.5 sm:inline-flex"
-          >
-            Join Now
-          </Link>
+              {userMenuOpen && (
+                <div
+                  role="menu"
+                  aria-label="Account"
+                  className="absolute right-0 top-full z-50 mt-3 w-60 animate-fade-in overflow-hidden rounded-2xl border border-gold/30 bg-ivory shadow-lg shadow-veda-brown/15"
+                >
+                  <div className="border-b border-gold/20 px-4 py-3">
+                    <p className="truncate text-sm font-semibold text-veda-bark">{user.name}</p>
+                    <p className="truncate text-xs text-veda-muted">{user.email}</p>
+                  </div>
+
+                  <div className="p-1.5">
+                    <Link
+                      to="/profile"
+                      role="menuitem"
+                      className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-veda-text transition-colors hover:bg-cream hover:text-veda-bark"
+                    >
+                      <UserRound size={17} className="text-veda-muted" aria-hidden />
+                      Profile
+                    </Link>
+
+                    <Link
+                      to="/dashboard"
+                      role="menuitem"
+                      className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-veda-text transition-colors hover:bg-cream hover:text-veda-bark"
+                    >
+                      <LayoutDashboard size={17} className="text-veda-muted" aria-hidden />
+                      Dashboard
+                    </Link>
+                  </div>
+
+                  <div className="border-t border-gold/20 p-1.5">
+                    <button
+                      type="button"
+                      role="menuitem"
+                      onClick={() => {
+                        setUserMenuOpen(false);
+                        logout();
+                      }}
+                      className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm text-veda-text transition-colors hover:bg-cream hover:text-veda-bark"
+                    >
+                      <LogOut size={17} className="text-veda-muted" aria-hidden />
+                      Logout
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <>
+              <Link
+                to="/login"
+                className="btn-outline hidden rounded-full px-5 py-2 transition-all duration-200 hover:-translate-y-0.5 sm:inline-flex"
+              >
+                Login
+              </Link>
+
+              <Link
+                to="/register"
+                className="btn-primary hidden rounded-full px-5 py-2 transition-all duration-200 hover:-translate-y-0.5 sm:inline-flex"
+              >
+                Join Now
+              </Link>
+            </>
+          )}
 
           <button
             type="button"
@@ -207,21 +305,23 @@ export default function Navbar({ cartCount = 0 }: NavbarProps) {
               </li>
             ))}
 
-            <li className="grid grid-cols-2 gap-3 pt-3 sm:hidden">
-              <Link
-                to="/login"
-                className="btn-outline rounded-full"
-              >
-                Login
-              </Link>
+            {!user && (
+              <li className="grid grid-cols-2 gap-3 pt-3 sm:hidden">
+                <Link
+                  to="/login"
+                  className="btn-outline rounded-full"
+                >
+                  Login
+                </Link>
 
-              <Link
-                to="/register"
-                className="btn-primary rounded-full"
-              >
-                Join Now
-              </Link>
-            </li>
+                <Link
+                  to="/register"
+                  className="btn-primary rounded-full"
+                >
+                  Join Now
+                </Link>
+              </li>
+            )}
           </ul>
         </div>
       )}
