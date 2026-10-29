@@ -1,6 +1,7 @@
 import { X } from 'lucide-react';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { env } from '@/config/env';
+import { INTRO_VIDEO_SRC } from '@/constants/assets';
 
 interface IntroModalProps {
   open: boolean;
@@ -9,6 +10,7 @@ interface IntroModalProps {
 
 export default function IntroModal({ open, onClose }: IntroModalProps) {
   const closeRef = useRef<HTMLButtonElement>(null);
+  const [videoFailed, setVideoFailed] = useState(false);
 
   useEffect(() => {
     if (!open) return;
@@ -24,6 +26,10 @@ export default function IntroModal({ open, onClose }: IntroModalProps) {
   }, [open, onClose]);
 
   if (!open) return null;
+
+  // 1) VITE_INTRO_VIDEO_URL (YouTube / Vimeo embed link) wins if it is set,
+  // 2) otherwise the local file in client/public/videos/ is played.
+  const embedUrl = env.introVideoUrl;
 
   return (
     <div
@@ -48,20 +54,30 @@ export default function IntroModal({ open, onClose }: IntroModalProps) {
         </button>
 
         <div className="aspect-video w-full bg-cream">
-          {env.introVideoUrl ? (
+          {embedUrl ? (
             <iframe
-              src={env.introVideoUrl}
+              src={embedUrl}
               title="VedaLearn introduction"
               className="h-full w-full"
               allow="accelerometer; autoplay; encrypted-media; picture-in-picture"
               allowFullScreen
             />
+          ) : !videoFailed ? (
+            <video
+              src={INTRO_VIDEO_SRC}
+              className="h-full w-full bg-black object-contain"
+              controls
+              autoPlay
+              playsInline
+              preload="metadata"
+              onError={() => setVideoFailed(true)}
+              aria-label="VedaLearn introduction"
+            />
           ) : (
             <div className="flex h-full flex-col items-center justify-center gap-2 p-6 text-center">
               <p className="font-display text-2xl text-veda-brown">Intro video coming soon</p>
               <p className="max-w-sm text-sm text-veda-muted">
-                Add an embed link as <code className="rounded bg-gold-pale px-1">VITE_INTRO_VIDEO_URL</code> in
-                client/.env to play it here.
+                Video file not found. Add it as <code className="rounded bg-gold-pale px-1">client/public{INTRO_VIDEO_SRC}</code>.
               </p>
             </div>
           )}
