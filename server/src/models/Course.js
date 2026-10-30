@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const LEVELS = ['Beginner', 'Intermediate', 'Advanced', 'All Levels'];
 
 /**
- * Courses shown on the website (homepage "Popular Courses" + the Explore Courses page).
+ * Courses shown on the website (homepage "Popular Courses", the Explore Courses page and the cart).
  * The future admin panel will create/edit these (pricing, badges, popularity) through the same model.
  */
 const courseSchema = new mongoose.Schema(
@@ -16,6 +16,8 @@ const courseSchema = new mongoose.Schema(
     image: { type: String, default: '', trim: true },
     // lucide icon key used as fallback when the image is missing
     icon: { type: String, default: 'sparkles', trim: true },
+    // Teacher name shown in the cart
+    instructor: { type: String, default: '', trim: true, maxlength: 60 },
     // Short text shown on the Courses page card (also searched by the search box)
     description: { type: String, default: '', trim: true, maxlength: 300 },
     // Course length in weeks (drives the Duration filter) and number of lessons

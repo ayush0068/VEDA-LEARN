@@ -56,6 +56,7 @@ export interface Course {
   order?: number;
   // Courses page (all optional, so older API responses still work)
   description?: string;
+  instructor?: string; // teacher name (cart page)
   weeks?: number;
   lessons?: number;
   level?: string; // Beginner | Intermediate | Advanced | All Levels
@@ -75,4 +76,39 @@ export interface User {
 export interface AuthPayload {
   user: User;
   token: string;
+}
+
+// Cart
+export interface CartSummary {
+  itemCount: number;
+  /** sum of the original (before-discount) prices */
+  listTotal: number;
+  courseDiscount: number;
+  couponDiscount: number;
+  total: number;
+  savings: number;
+  savingsPercent: number;
+}
+
+export interface CartCoupon {
+  code: string;
+  label: string;
+  /** rupees taken off */
+  amount: number;
+}
+
+/** Everything the cart page shows (GET /cart for signed-in users, POST /cart/preview for guests). */
+export interface CartView {
+  items: Course[];
+  summary: CartSummary;
+  coupon: CartCoupon | null;
+  couponError?: string;
+  recommended: Course[];
+}
+
+/** Light response of the cart mutation endpoints. */
+export interface CartState {
+  slugs: string[];
+  count: number;
+  couponCode: string | null;
 }

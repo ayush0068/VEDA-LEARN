@@ -1,5 +1,6 @@
 import { Route, Routes } from 'react-router-dom';
 import MainLayout from '@/components/layout/MainLayout';
+import Cart from '@/pages/Cart';
 import Courses from '@/pages/Courses';
 import Home from '@/pages/Home';
 import Login from '@/pages/Login';
@@ -23,7 +24,8 @@ export default function App() {
         <Route path="forgot-password" element={<PlaceholderPage title="Reset Password" />} />
         <Route path="profile" element={<PlaceholderPage title="My Profile" />} />
         <Route path="dashboard" element={<PlaceholderPage title="My Dashboard" />} />
-        <Route path="cart" element={<PlaceholderPage title="Your Cart" />} />
+        <Route path="cart" element={<Cart />} />
+        <Route path="checkout" element={<PlaceholderPage title="Checkout" />} />
         <Route path="faq" element={<PlaceholderPage title="FAQ" />} />
         <Route path="terms" element={<PlaceholderPage title="Terms & Conditions" />} />
         <Route path="privacy" element={<PlaceholderPage title="Privacy Policy" />} />

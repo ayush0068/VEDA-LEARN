@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
-import { LotusMark } from '@/components/common/Logo';
+import Logo from '@/components/common/Logo';
 import Mandala from '@/components/common/Mandala';
 import { AUTH_BG_SRC } from '@/constants/assets';
 
@@ -11,6 +11,8 @@ interface AuthLayoutProps {
   /** top-right helper text + button, e.g. "New here?" + "Create Account" */
   switchPrompt: string;
   switchLabel: string;
+  /** shorter label used on phones so the button stays on one line, e.g. "Sign Up" */
+  switchLabelShort?: string;
   switchTo: string;
   /** card width: "sm" for login, "md" for the longer register form */
   size?: 'sm' | 'md';
@@ -18,7 +20,7 @@ interface AuthLayoutProps {
 }
 
 /** Full-screen sunrise-ghat background + logo header + centred card, shared by Login and Register. */
-export default function AuthLayout({ title, switchPrompt, switchLabel, switchTo, size = 'sm', children }: AuthLayoutProps) {
+export default function AuthLayout({ title, switchPrompt, switchLabel, switchLabelShort, switchTo, size = 'sm', children }: AuthLayoutProps) {
   const [imageFailed, setImageFailed] = useState(false);
 
   useEffect(() => {
@@ -59,23 +61,30 @@ export default function AuthLayout({ title, switchPrompt, switchLabel, switchTo,
         </span>
       </div>
 
-      <header className="flex items-center justify-between gap-3 px-5 pt-5 sm:px-10 sm:pt-7 lg:px-12">
-        <Link to="/" className="flex items-center gap-2 sm:gap-3" aria-label="VedaLearn home">
-          <LotusMark className="h-11 w-11 shrink-0 sm:h-14 sm:w-14" />
-          <span className="leading-none">
-            <span className="block font-display text-[1.7rem] font-medium text-veda-bark sm:text-[2.25rem]">VedaLearn</span>
-            <span className="mt-1 block text-[0.62rem] tracking-wide text-veda-text sm:text-[0.74rem]">Learn • Practice • Grow</span>
-          </span>
-        </Link>
+      {/* frosted-glass pill header (blurs the photo behind it) */}
+      <header className="px-3 pt-3 sm:px-5 sm:pt-4">
+        <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between gap-2 rounded-full border border-white/60 bg-gradient-to-b from-white/50 to-white/30 px-3 shadow-[0_8px_32px_rgba(62,31,11,0.18)] ring-1 ring-inset ring-white/40 backdrop-blur-2xl backdrop-saturate-150 sm:px-6 lg:px-8">
+          {/* logo never wraps; on very narrow phones the tagline is hidden so everything fits on one line */}
+          <div className="shrink-0 max-[359px]:[&_.mt-1]:hidden [&_.mt-1]:text-veda-text">
+            <Logo />
+          </div>
 
-        <div className="flex items-center gap-3 sm:gap-4">
-          <span className="hidden text-[0.92rem] text-veda-text sm:inline">{switchPrompt}</span>
-          <Link
-            to={switchTo}
-            className="inline-flex h-10 items-center rounded-full border border-veda-brown/70 bg-ivory/30 px-5 text-[0.88rem] font-semibold text-veda-brown backdrop-blur-sm transition-colors hover:bg-veda-brown hover:text-ivory sm:h-11 sm:px-6 sm:text-[0.92rem]"
-          >
-            {switchLabel}
-          </Link>
+          <div className="flex shrink-0 items-center gap-3 sm:gap-4">
+            <span className="hidden text-[0.92rem] font-medium text-veda-bark sm:inline">{switchPrompt}</span>
+            <Link
+              to={switchTo}
+              className="btn-outline whitespace-nowrap rounded-full px-4 py-2 transition-all duration-200 hover:-translate-y-0.5 sm:px-5"
+            >
+              {switchLabelShort ? (
+                <>
+                  <span className="sm:hidden">{switchLabelShort}</span>
+                  <span className="hidden sm:inline">{switchLabel}</span>
+                </>
+              ) : (
+                switchLabel
+              )}
+            </Link>
+          </div>
         </div>
       </header>
 

@@ -1,5 +1,6 @@
 const { Router } = require('express');
 const authRoutes = require('./auth.routes');
+const cartRoutes = require('./cart.routes');
 const categoryRoutes = require('./category.routes');
 const courseRoutes = require('./course.routes');
 const featureRoutes = require('./feature.routes');
@@ -13,6 +14,7 @@ router.use('/auth', authRoutes);
 router.use('/features', featureRoutes);
 router.use('/categories', categoryRoutes);
 router.use('/courses', courseRoutes);
+router.use('/cart', cartRoutes);
 router.use('/newsletter', newsletterRoutes);
 
 // Future milestones plug in here, e.g.:

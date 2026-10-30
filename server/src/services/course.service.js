@@ -5,6 +5,8 @@ const Course = require('../models/Course');
 const CATALOG_FIELDS = ['category', 'image', 'description', 'weeks', 'lessons', 'level', 'language', 'order'];
 // "Old" course = no description yet (created before the Explore Courses page existed)
 const MISSING_DESCRIPTION = { $in: [null, ''] };
+// older courses also have no teacher name yet (needed by the cart page)
+const MISSING_INSTRUCTOR = { $in: [null, ''] };
 
 const pickFields = (item, fields) => Object.fromEntries(fields.map((key) => [key, item[key]]));
 
@@ -30,6 +32,12 @@ const seedCourses = async () => {
           update: { $set: pickFields(item, CATALOG_FIELDS) },
         },
       },
+      {
+        updateOne: {
+          filter: { slug: item.slug, instructor: MISSING_INSTRUCTOR },
+          update: { $set: { instructor: item.instructor } },
+        },
+      },
     ]),
     { ordered: true },
   );
@@ -47,7 +55,7 @@ const seedCoursesIfNeeded = async () => {
   if ((await Course.estimatedDocumentCount()) === 0) return seedCourses();
   const hasOldCourses = await Course.exists({
     slug: { $in: COURSE_SEEDS.map((c) => c.slug) },
-    description: MISSING_DESCRIPTION,
+    $or: [{ description: MISSING_DESCRIPTION }, { instructor: MISSING_INSTRUCTOR }],
   });
   return hasOldCourses ? seedCourses() : 0;
 };
@@ -115,7 +123,7 @@ const getActiveCourses = async ({ sort = 'popular', page, limit = 50, ...filters
   const query = Course.find(buildCourseFilter(filters))
     .sort(SORTS[sort] || SORTS.popular)
     .select(
-      'slug title category image icon description weeks lessons level language rating studentsCount price originalPrice badge order createdAt -_id',
+      'slug title category image icon instructor description weeks lessons level language rating studentsCount price originalPrice badge order createdAt -_id',
     );
 
   if (!page) {

@@ -55,7 +55,7 @@ export default function Login() {
   };
 
   return (
-    <AuthLayout title="Sign In" switchPrompt="New here?" switchLabel="Create Account" switchTo="/register">
+    <AuthLayout title="Sign In" switchPrompt="New here?" switchLabel="Create Account" switchLabelShort="Sign Up" switchTo="/register">
       <AuthHeading title="Welcome Back" subtitle="Continue your journey of learning and self-growth" />
 
       <form onSubmit={onSubmit} noValidate className="mt-7 space-y-3.5">
