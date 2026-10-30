@@ -1,9 +1,10 @@
-import { ShoppingBag, Trash2 } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import CartHero from '@/components/cart/CartHero';
 import CartItem from '@/components/cart/CartItem';
 import CouponBox from '@/components/cart/CouponBox';
+import EmptyCart from '@/components/cart/EmptyCart';
 import OrderSummary from '@/components/cart/OrderSummary';
 import Recommended from '@/components/cart/Recommended';
 import TrustStrip from '@/components/cart/TrustStrip';
@@ -96,65 +97,56 @@ export default function Cart() {
       <CartHero />
 
       <div className="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
-        <div className="relative -mt-8 grid gap-6 lg:-mt-12 lg:grid-cols-[minmax(0,1fr)_23.5rem] lg:items-start">
-          {/* ---------------- cart items ---------------- */}
-          <section
-            aria-labelledby="cart-items-heading"
-            className="rounded-2xl border border-gold/20 bg-cream/80 p-4 shadow-soft backdrop-blur-sm sm:p-6"
-          >
-            <div className="flex items-center justify-between gap-3">
-              <h2 id="cart-items-heading" className="font-display text-[1.4rem] font-semibold text-veda-bark sm:text-[1.6rem]">
-                Cart Items ({items.length})
-              </h2>
-              {items.length > 0 && (
-                <button
-                  type="button"
-                  onClick={clearAll}
-                  className="inline-flex items-center gap-1.5 rounded-md px-1.5 py-1 text-[0.85rem] text-veda-text transition-colors hover:bg-gold-pale hover:text-saffron"
-                >
-                  <Trash2 size={15} aria-hidden /> Clear Cart
-                </button>
+        {isEmpty ? (
+          // empty cart: one centred card that deliberately overlaps the banner's soft bottom edge
+          <div className="relative -mt-16 lg:-mt-20">
+            <EmptyCart />
+          </div>
+        ) : (
+          <div className="relative -mt-16 grid gap-6 lg:-mt-20 lg:grid-cols-[minmax(0,1fr)_23.5rem] lg:items-start">
+            {/* ---------------- cart items ---------------- */}
+            <section
+              aria-labelledby="cart-items-heading"
+              className="rounded-2xl border border-gold/25 bg-cream p-4 shadow-[0_24px_60px_-28px_rgba(90,45,15,0.45)] sm:p-6"
+            >
+              <div className="flex items-center justify-between gap-3">
+                <h2 id="cart-items-heading" className="font-display text-[1.4rem] font-semibold text-veda-bark sm:text-[1.6rem]">
+                  Cart Items ({items.length})
+                </h2>
+                {items.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={clearAll}
+                    className="inline-flex items-center gap-1.5 rounded-md px-1.5 py-1 text-[0.85rem] text-veda-text transition-colors hover:bg-gold-pale hover:text-saffron"
+                  >
+                    <Trash2 size={15} aria-hidden /> Clear Cart
+                  </button>
+                )}
+              </div>
+
+              {waiting ? (
+                <ItemsSkeleton />
+              ) : error && !view ? (
+                <div role="alert" className="mt-5 rounded-xl border border-red-300/60 bg-red-50/70 p-5 text-center">
+                  <p className="text-[0.95rem] text-red-800">{error}</p>
+                  <button
+                    type="button"
+                    onClick={() => setReloadKey((k) => k + 1)}
+                    className="mt-3 inline-flex h-10 items-center rounded-lg border border-veda-brown/70 px-5 text-sm font-medium text-veda-brown transition-colors hover:bg-veda-brown hover:text-ivory"
+                  >
+                    Try again
+                  </button>
+                </div>
+              ) : (
+                <ul className="mt-5 space-y-3">
+                  {shown.map((course, i) => (
+                    <CartItem key={course.slug} course={course} index={i} onRemove={remove} />
+                  ))}
+                </ul>
               )}
-            </div>
+            </section>
 
-            {waiting ? (
-              <ItemsSkeleton />
-            ) : error && !view ? (
-              <div role="alert" className="mt-5 rounded-xl border border-red-300/60 bg-red-50/70 p-5 text-center">
-                <p className="text-[0.95rem] text-red-800">{error}</p>
-                <button
-                  type="button"
-                  onClick={() => setReloadKey((k) => k + 1)}
-                  className="mt-3 inline-flex h-10 items-center rounded-lg border border-veda-brown/70 px-5 text-sm font-medium text-veda-brown transition-colors hover:bg-veda-brown hover:text-ivory"
-                >
-                  Try again
-                </button>
-              </div>
-            ) : isEmpty ? (
-              <div className="mt-5 flex flex-col items-center rounded-xl border border-dashed border-gold/40 bg-ivory/70 px-5 py-12 text-center">
-                <span className="flex h-16 w-16 items-center justify-center rounded-full bg-gold-pale text-saffron">
-                  <ShoppingBag size={28} strokeWidth={1.5} aria-hidden />
-                </span>
-                <p className="mt-4 font-display text-[1.4rem] font-semibold text-veda-bark">Your cart is empty</p>
-                <p className="mt-1.5 max-w-xs text-[0.92rem] text-veda-muted">Explore our courses and add the wisdom you want to learn.</p>
-                <Link
-                  to="/courses"
-                  className="mt-5 inline-flex h-11 items-center rounded-full bg-veda-brown px-7 text-[0.92rem] font-medium text-ivory transition-colors hover:bg-veda-bark"
-                >
-                  Explore Courses
-                </Link>
-              </div>
-            ) : (
-              <ul className="mt-5 space-y-3">
-                {shown.map((course, i) => (
-                  <CartItem key={course.slug} course={course} index={i} onRemove={remove} />
-                ))}
-              </ul>
-            )}
-          </section>
-
-          {/* ---------------- summary / coupon / trust ---------------- */}
-          {!isEmpty && (
+            {/* ---------------- summary / coupon / trust ---------------- */}
             <aside className="space-y-4 lg:sticky lg:top-24">
               {view ? (
                 <>
@@ -168,12 +160,12 @@ export default function Cart() {
                   />
                 </>
               ) : (
-                <div className="h-64 animate-pulse rounded-2xl border border-gold/20 bg-cream/70" aria-hidden />
+                <div className="h-64 animate-pulse rounded-2xl border border-gold/20 bg-cream" aria-hidden />
               )}
               <TrustStrip />
             </aside>
-          )}
-        </div>
+          </div>
+        )}
 
         {view && <Recommended courses={suggestions} onAdd={add} />}
       </div>

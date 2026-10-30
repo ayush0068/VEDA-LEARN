@@ -23,7 +23,7 @@ export default function OrderSummary({ summary, couponCode, updating, onCheckout
   const empty = summary.itemCount === 0;
 
   return (
-    <section aria-labelledby="summary-heading" className="rounded-2xl border border-gold/20 bg-cream/70 p-5 shadow-soft sm:p-6">
+    <section aria-labelledby="summary-heading" className="rounded-2xl border border-gold/25 bg-cream p-5 shadow-[0_24px_60px_-28px_rgba(90,45,15,0.45)] sm:p-6">
       <h2 id="summary-heading" className="font-display text-[1.35rem] font-semibold text-veda-bark">
         Order Summary
       </h2>

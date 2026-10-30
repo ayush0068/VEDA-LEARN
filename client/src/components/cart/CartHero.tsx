@@ -10,7 +10,7 @@ export default function CartHero() {
 
   return (
     <section
-      className="relative isolate overflow-hidden bg-gradient-to-b from-[#f9d9a2] via-[#f6e0b8] to-[#fbf1dd] pb-14 sm:pb-16 lg:pb-20"
+      className="relative isolate overflow-hidden bg-gradient-to-b from-[#f9d9a2] via-[#f6e0b8] to-[#fbf1dd] pb-24 sm:pb-28 lg:pb-32"
       aria-labelledby="cart-heading"
     >
       {!imageFailed && (
@@ -28,6 +28,9 @@ export default function CartHero() {
         className="absolute inset-0 -z-10 bg-gradient-to-r from-ivory/95 via-ivory/70 to-ivory/10 sm:from-ivory/90 sm:via-ivory/55"
         aria-hidden
       />
+
+      {/* the photo melts into the page background, so the cards below overlap a soft edge (not a hard cut) */}
+      <div className="absolute inset-x-0 bottom-0 -z-10 h-32 bg-gradient-to-b from-transparent via-ivory/70 to-ivory sm:h-36" aria-hidden />
 
       <div className="pointer-events-none absolute -left-24 top-1/2 -z-10 h-64 w-64 -translate-y-1/2 sm:h-80 sm:w-80" aria-hidden>
         <Mandala className="h-full w-full animate-spin-slow text-gold/25 [stroke-width:0.5] motion-reduce:animate-none" />

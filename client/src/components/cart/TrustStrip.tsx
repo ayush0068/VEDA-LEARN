@@ -8,7 +8,7 @@ const POINTS = [
 
 export default function TrustStrip() {
   return (
-    <ul className="grid grid-cols-3 gap-2 rounded-2xl border border-gold/20 bg-cream/70 p-3 shadow-soft sm:p-4">
+    <ul className="grid grid-cols-3 gap-2 rounded-2xl border border-gold/25 bg-cream p-3 shadow-soft sm:p-4">
       {POINTS.map(({ icon: Icon, title, sub }) => (
         <li key={title} className="flex flex-col items-center gap-1.5 text-center sm:flex-row sm:gap-2.5 sm:text-left">
           <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-gold/40 text-saffron">

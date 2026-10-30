@@ -31,7 +31,7 @@ export default function CouponBox({ coupon, couponError, disabled, onApply, onRe
   };
 
   return (
-    <section aria-labelledby="coupon-heading" className="rounded-2xl border border-gold/20 bg-cream/70 p-4 shadow-soft sm:p-5">
+    <section aria-labelledby="coupon-heading" className="rounded-2xl border border-gold/25 bg-cream p-4 shadow-soft sm:p-5">
       <h2 id="coupon-heading" className="flex items-center gap-2.5 text-[0.95rem] font-medium text-veda-bark">
         <TicketPercent size={21} strokeWidth={1.5} className="text-saffron" aria-hidden />
         Have a Coupon Code?
