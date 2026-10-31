@@ -4,6 +4,8 @@ import Cart from '@/pages/Cart';
 import CourseDetail from '@/pages/CourseDetail';
 import Courses from '@/pages/Courses';
 import Home from '@/pages/Home';
+import LiveClassDetail from '@/pages/LiveClassDetail';
+import LiveClasses from '@/pages/LiveClasses';
 import Login from '@/pages/Login';
 import PlaceholderPage from '@/pages/PlaceholderPage';
 import Register from '@/pages/Register';
@@ -19,7 +21,8 @@ export default function App() {
         <Route index element={<Home />} />
         <Route path="courses" element={<Courses />} />
         <Route path="courses/:slug" element={<CourseDetail />} />
-        <Route path="live-classes" element={<PlaceholderPage title="Live Classes" />} />
+        <Route path="live-classes" element={<LiveClasses />} />
+        <Route path="live-classes/:id" element={<LiveClassDetail />} />
         <Route path="about" element={<PlaceholderPage title="About" />} />
         <Route path="contact" element={<PlaceholderPage title="Contact" />} />
         <Route path="forgot-password" element={<PlaceholderPage title="Reset Password" />} />
