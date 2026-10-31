@@ -1,6 +1,7 @@
 import { Route, Routes } from 'react-router-dom';
 import MainLayout from '@/components/layout/MainLayout';
 import Cart from '@/pages/Cart';
+import About from '@/pages/About';
 import CourseDetail from '@/pages/CourseDetail';
 import Courses from '@/pages/Courses';
 import Home from '@/pages/Home';
@@ -23,7 +24,7 @@ export default function App() {
         <Route path="courses/:slug" element={<CourseDetail />} />
         <Route path="live-classes" element={<LiveClasses />} />
         <Route path="live-classes/:id" element={<LiveClassDetail />} />
-        <Route path="about" element={<PlaceholderPage title="About" />} />
+        <Route path="about" element={<About />} />
         <Route path="contact" element={<PlaceholderPage title="Contact" />} />
         <Route path="forgot-password" element={<PlaceholderPage title="Reset Password" />} />
         <Route path="profile" element={<PlaceholderPage title="My Profile" />} />
