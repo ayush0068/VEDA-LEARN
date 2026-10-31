@@ -1,5 +1,5 @@
 import { ArrowRight } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Mandala from '@/components/common/Mandala';
 import { getIcon } from '@/constants/icons';
@@ -14,15 +14,23 @@ const FALLBACK_BG = [
   'from-gold to-veda-brown',
 ];
 
+/** "/images/x.jpg" <-> "/images/x.png": the database and the files in /public can disagree on the extension. */
+const otherExtension = (src: string): string => src.replace(/\.(jpe?g|png)$/i, (_, ext: string) => (ext.toLowerCase() === 'png' ? '.jpg' : '.png'));
+
 interface CategoryCardProps {
   category: Category;
   index: number;
 }
 
 export default function CategoryCard({ category, index }: CategoryCardProps) {
-  const [imageFailed, setImageFailed] = useState(false);
+  // 0 = image as given, 1 = same file with the other extension, 2 = give up -> icon fallback
+  const [attempt, setAttempt] = useState(0);
   const Icon = getIcon(category.icon);
-  const showImage = Boolean(category.image) && !imageFailed;
+
+  useEffect(() => setAttempt(0), [category.image]);
+
+  const src = attempt === 0 ? category.image : otherExtension(category.image);
+  const showImage = Boolean(category.image) && attempt < 2;
 
   return (
     <Link
@@ -33,10 +41,10 @@ export default function CategoryCard({ category, index }: CategoryCardProps) {
       <div className="relative aspect-[4/3] overflow-hidden rounded-lg">
         {showImage ? (
           <img
-            src={category.image}
+            src={src}
             alt=""
             loading="lazy"
-            onError={() => setImageFailed(true)}
+            onError={() => setAttempt((a) => a + 1)}
             className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
           />
         ) : (

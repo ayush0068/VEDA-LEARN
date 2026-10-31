@@ -7,6 +7,8 @@ import type { Course } from '@/types';
 export const useCourseCatalog = () => {
   const [courses, setCourses] = useState<Course[]>(DEFAULT_CATALOG);
   const [source, setSource] = useState<'default' | 'api'>('default');
+  // true once the API request has finished (successfully or not)
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -19,11 +21,14 @@ export const useCourseCatalog = () => {
       })
       .catch(() => {
         /* keep defaults */
+      })
+      .finally(() => {
+        if (active) setLoaded(true);
       });
     return () => {
       active = false;
     };
   }, []);
 
-  return { courses, source };
+  return { courses, source, loaded };
 };
