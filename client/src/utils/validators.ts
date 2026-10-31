@@ -24,3 +24,14 @@ export const newPasswordError = (value: string): string => {
   if (!/[A-Za-z]/.test(value) || !/\d/.test(value)) return 'Use at least one letter and one number';
   return '';
 };
+
+/** Contact form: query type must be one of the allowed options (the list is passed in to avoid a circular import). */
+export const queryTypeError = (value: string): string => (value ? '' : 'Please choose a query type');
+
+export const messageError = (value: string, max = 2000): string => {
+  const message = value.trim();
+  if (!message) return 'Please write your message';
+  if (message.length < 10) return 'Message must be at least 10 characters';
+  if (message.length > max) return `Message is too long (max ${max} characters)`;
+  return '';
+};

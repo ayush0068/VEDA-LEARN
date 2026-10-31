@@ -1,6 +1,7 @@
 import { Route, Routes } from 'react-router-dom';
 import MainLayout from '@/components/layout/MainLayout';
 import Cart from '@/pages/Cart';
+import Contact from '@/pages/Contact';
 import About from '@/pages/About';
 import CourseDetail from '@/pages/CourseDetail';
 import Courses from '@/pages/Courses';
@@ -25,7 +26,7 @@ export default function App() {
         <Route path="live-classes" element={<LiveClasses />} />
         <Route path="live-classes/:id" element={<LiveClassDetail />} />
         <Route path="about" element={<About />} />
-        <Route path="contact" element={<PlaceholderPage title="Contact" />} />
+        <Route path="contact" element={<Contact />} />
         <Route path="forgot-password" element={<PlaceholderPage title="Reset Password" />} />
         <Route path="profile" element={<PlaceholderPage title="My Profile" />} />
         <Route path="dashboard" element={<PlaceholderPage title="My Dashboard" />} />
