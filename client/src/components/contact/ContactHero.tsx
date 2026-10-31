@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import Mandala from '@/components/common/Mandala';
 import { Ornament } from '@/components/about/AboutHero';
 import { CONTACT_BANNER_SRC } from '@/constants/contact';
 import { OmDivider } from './ContactOrnaments';
@@ -29,9 +28,9 @@ export default function ContactHero() {
         aria-hidden
       />
 
-      <div className="pointer-events-none absolute -left-28 top-1/2 -z-10 h-72 w-72 -translate-y-1/2 sm:h-80 sm:w-80" aria-hidden>
+      {/* <div className="pointer-events-none absolute -left-28 top-1/2 -z-10 h-72 w-72 -translate-y-1/2 sm:h-80 sm:w-80" aria-hidden>
         <Mandala className="h-full w-full animate-spin-slow text-gold/30 [stroke-width:0.45] motion-reduce:animate-none" />
-      </div>
+      </div> */}
 
       <div className="relative mx-auto flex min-h-[330px] max-w-7xl items-center px-4 pb-20 pt-10 sm:min-h-[360px] sm:px-6 sm:pb-24 lg:min-h-[385px] lg:px-8">
         <div className="max-w-[34rem] animate-rise-in">
