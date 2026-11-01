@@ -1,4 +1,3 @@
-
 const path = require('path');
 const dotenv = require('dotenv');
 
@@ -60,6 +59,10 @@ const env = {
     'http://127.0.0.1:5173',
     'http://127.0.0.1:5174',
   ]),
+
+  // First dashboard visit of a student with no learning data: fill it with sample courses / activity so the
+  // page is not empty. ON outside production by default; set DEMO_DASHBOARD=false to start students empty.
+  demoDashboard: toBool(process.env.DEMO_DASHBOARD, !isProduction),
 
   jwtSecret,
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '1d',

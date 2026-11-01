@@ -4,6 +4,7 @@ const cartRoutes = require('./cart.routes');
 const categoryRoutes = require('./category.routes');
 const contactRoutes = require('./contact.routes');
 const courseRoutes = require('./course.routes');
+const dashboardRoutes = require('./dashboard.routes');
 const featureRoutes = require('./feature.routes');
 const healthRoutes = require('./health.routes');
 const newsletterRoutes = require('./newsletter.routes');
@@ -18,6 +19,7 @@ router.use('/courses', courseRoutes);
 router.use('/cart', cartRoutes);
 router.use('/newsletter', newsletterRoutes);
 router.use('/contact', contactRoutes);
+router.use('/dashboard', dashboardRoutes);
 
 // Future milestones plug in here, e.g.:
 // router.use('/admin', protect, restrictTo('admin'), adminRoutes);   // used by the future admin/ panel
