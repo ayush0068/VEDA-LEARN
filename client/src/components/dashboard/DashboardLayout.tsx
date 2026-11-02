@@ -30,7 +30,9 @@ export default function DashboardLayout() {
 
   const notifications = useMemo(() => (data ? buildNotifications(now, data.assignments, data.activity) : []), [data, now]);
 
-  useEffect(() => setDrawer(false), [location.pathname]);
+  useEffect(() => {
+    setDrawer(false);
+  }, [location.pathname]);
   useEffect(() => {
     document.body.style.overflow = drawer ? 'hidden' : '';
     return () => {
@@ -39,7 +41,9 @@ export default function DashboardLayout() {
   }, [drawer]);
 
   // scroll to the top on every dashboard page change
-  useEffect(() => window.scrollTo({ top: 0 }), [location.pathname]);
+  useEffect(() => {
+    window.scrollTo({ top: 0 });
+  }, [location.pathname]);
 
   const ctx: DashboardContextValue = { data, loading, error, reload, now, liveState, notify: show };
 
