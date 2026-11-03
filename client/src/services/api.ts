@@ -29,6 +29,24 @@ export const storeToken = (token: string, remember: boolean): void => {
   }
 };
 
+/** Swaps the token in whichever storage already holds it (used after a password change). */
+export const replaceToken = (token: string): void => {
+  try {
+    storeToken(token, localStorage.getItem(TOKEN_KEY) !== null);
+  } catch {
+    /* storage unavailable */
+  }
+};
+
+/** true when the session survives a browser restart ("Remember me") */
+export const isTokenRemembered = (): boolean => {
+  try {
+    return localStorage.getItem(TOKEN_KEY) !== null;
+  } catch {
+    return false;
+  }
+};
+
 export const clearToken = (): void => {
   try {
     localStorage.removeItem(TOKEN_KEY);

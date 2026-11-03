@@ -4,6 +4,7 @@ import PageBackdrop from '@/components/common/PageBackdrop';
 import { env } from '@/config/env';
 import { useCart } from '@/context/CartContext';
 import Footer from './Footer';
+import MobileSearchFab from './MobileSearchFab';
 import Navbar from './Navbar';
 
 export default function MainLayout() {
@@ -18,6 +19,7 @@ export default function MainLayout() {
         <Outlet />
       </main>
       <Footer />
+      <MobileSearchFab />
       {env.showApiStatus && <ApiStatusBadge />}
     </div>
   );

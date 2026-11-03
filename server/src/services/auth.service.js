@@ -14,6 +14,7 @@ const toPublicUser = (user) => ({
   name: user.name,
   email: user.email,
   role: user.role,
+  avatar: user.avatar || '',
   createdAt: user.createdAt,
 });
 
@@ -69,7 +70,12 @@ const getUserFromToken = async (token) => {
 
   const user = await User.findById(payload.sub);
   if (!user || !user.isActive) throw new ApiError(401, 'Your session has expired. Please sign in again.');
+
+  // a password change signs out every older token (iat is in whole seconds)
+  if (user.passwordChangedAt && payload.iat < Math.floor(user.passwordChangedAt.getTime() / 1000)) {
+    throw new ApiError(401, 'Your password was changed. Please sign in again.');
+  }
   return user;
 };
 
-module.exports = { registerUser, loginUser, getUserFromToken, toPublicUser };
+module.exports = { registerUser, loginUser, getUserFromToken, toPublicUser, signToken };

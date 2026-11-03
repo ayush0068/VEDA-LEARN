@@ -29,5 +29,5 @@ export const useSavedCourses = () => {
     [],
   );
 
-  return { isSaved, toggleSaved };
+  return { saved, isSaved, toggleSaved };
 };

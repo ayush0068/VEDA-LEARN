@@ -14,6 +14,8 @@ interface DashboardHeaderProps {
   seen: string[];
   onSeen: (ids: string[]) => void;
   onOpenMenu: () => void;
+  /** the profile page shows only the photo + arrow (no name) */
+  hideUserName?: boolean;
 }
 
 /** Click outside / Escape closes a dropdown */
@@ -37,7 +39,7 @@ const useDismiss = (open: boolean, close: () => void) => {
   return ref;
 };
 
-export default function DashboardHeader({ cartCount, notifications, seen, onSeen, onOpenMenu }: DashboardHeaderProps) {
+export default function DashboardHeader({ cartCount, notifications, seen, onSeen, onOpenMenu, hideUserName = false }: DashboardHeaderProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, logout } = useAuth();
@@ -174,8 +176,8 @@ export default function DashboardHeader({ cartCount, notifications, seen, onSeen
               aria-label="Account menu"
               className="flex items-center gap-2.5 rounded-full py-1 pl-1 pr-1 hover:bg-gold-pale/50 lg:pr-3"
             >
-              <Avatar name={name} src={DASH_AVATAR_SRC} className="h-9 w-9" />
-              <span className="hidden text-left leading-tight lg:block">
+              <Avatar name={name} src={user?.avatar || DASH_AVATAR_SRC} className="h-9 w-9" />
+              <span className={`${hideUserName ? 'hidden' : 'hidden lg:block'} text-left leading-tight`}>
                 <span className="block max-w-[9rem] truncate text-[0.82rem] font-medium text-veda-bark">{name}</span>
                 <span className="block text-[0.7rem] text-veda-muted">Student</span>
               </span>

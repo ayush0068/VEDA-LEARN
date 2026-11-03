@@ -70,6 +70,8 @@ export interface User {
   name: string;
   email: string;
   role: 'student' | 'admin';
+  /** profile photo (small data URL), empty when none was uploaded */
+  avatar?: string;
   createdAt?: string;
 }
 

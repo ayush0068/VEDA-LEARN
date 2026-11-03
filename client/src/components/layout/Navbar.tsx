@@ -2,6 +2,8 @@ import { LayoutDashboard, LogOut, Menu, Search, ShoppingCart, UserRound, X } fro
 import { FormEvent, useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import Logo from '@/components/common/Logo';
+import Avatar from '@/components/course/Avatar';
+import { DASH_AVATAR_SRC } from '@/constants/dashboard';
 import { NAV_ITEMS } from '@/constants/navigation';
 import { useAuth } from '@/context/AuthContext';
 
@@ -21,13 +23,6 @@ export default function Navbar({ cartCount = 0 }: NavbarProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, logout } = useAuth();
-  const initials = (user?.name ?? '')
-    .split(' ')
-    .filter(Boolean)
-    .map((part) => part[0])
-    .slice(0, 2)
-    .join('')
-    .toUpperCase();
 
   // Detect scroll position
   useEffect(() => {
@@ -141,7 +136,9 @@ export default function Navbar({ cartCount = 0 }: NavbarProps) {
           <button
             type="button"
             onClick={() => setSearchOpen((v) => !v)}
-            className="rounded-full p-2 text-veda-brown transition-colors duration-200 hover:bg-gold-pale/60"
+            className={`rounded-full p-2 text-veda-brown transition-colors duration-200 hover:bg-gold-pale/60 ${
+              user ? 'hidden lg:block' : '' // signed in: phones use the round search button at the bottom right
+            }`}
             aria-label="Search courses"
             aria-expanded={searchOpen}
           >
@@ -170,9 +167,9 @@ export default function Navbar({ cartCount = 0 }: NavbarProps) {
                 aria-label="Account menu"
                 aria-haspopup="menu"
                 aria-expanded={userMenuOpen}
-                className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-gold/60 bg-veda-brown text-[0.85rem] font-semibold tracking-wide text-ivory transition-all duration-200 hover:-translate-y-0.5 hover:border-gold hover:bg-veda-bark"
+                className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border-2 border-gold/60 transition-all duration-200 hover:-translate-y-0.5 hover:border-gold"
               >
-                {initials || <UserRound size={18} aria-hidden />}
+                <Avatar name={user.name} src={user.avatar || DASH_AVATAR_SRC} className="h-full w-full" textClass="text-[0.85rem]" />
               </button>
 
               {userMenuOpen && (
