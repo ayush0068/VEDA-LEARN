@@ -163,6 +163,13 @@ const updatePrivacy = asyncHandler(async (req, res) => {
   send(res, { privacy: await service.updatePrivacy(req.user, values) }, 'Privacy settings saved');
 });
 
+// PATCH /api/profile/preferences   body: { searchSide: 'left' | 'right' }
+const updatePreferences = asyncHandler(async (req, res) => {
+  const searchSide = asString(bodyOf(req).searchSide);
+  if (searchSide !== 'left' && searchSide !== 'right') throw new ApiError(400, 'Please choose left or right');
+  send(res, await service.updateSearchSide(req.user, searchSide), 'Preference saved');
+});
+
 // GET /api/profile/orders
 const getOrders = asyncHandler(async (req, res) => {
   send(res, { orders: await service.listOrders(req.user) });
@@ -177,5 +184,6 @@ module.exports = {
   updatePassword,
   updateNotifications,
   updatePrivacy,
+  updatePreferences,
   getOrders,
 };

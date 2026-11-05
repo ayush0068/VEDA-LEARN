@@ -1,4 +1,4 @@
-import { Bell, ChevronDown, LogOut, Menu, Search, ShoppingCart, UserRound, X } from 'lucide-react';
+import { Bell, ChevronDown, LayoutDashboard, LogOut, Menu, Search, ShoppingCart, UserRound, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
@@ -16,6 +16,8 @@ interface DashboardHeaderProps {
   onOpenMenu: () => void;
   /** the profile page shows only the photo + arrow (no name) */
   hideUserName?: boolean;
+  /** page the header is on: the account menu offers the other one (Profile <-> Dashboard) + Log out */
+  current?: 'dashboard' | 'profile';
 }
 
 /** Click outside / Escape closes a dropdown */
@@ -39,7 +41,7 @@ const useDismiss = (open: boolean, close: () => void) => {
   return ref;
 };
 
-export default function DashboardHeader({ cartCount, notifications, seen, onSeen, onOpenMenu, hideUserName = false }: DashboardHeaderProps) {
+export default function DashboardHeader({ cartCount, notifications, seen, onSeen, onOpenMenu, hideUserName = false, current = 'dashboard' }: DashboardHeaderProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, logout } = useAuth();
@@ -185,9 +187,15 @@ export default function DashboardHeader({ cartCount, notifications, seen, onSeen
             </button>
             {userOpen && (
               <div role="menu" className="animate-fade-in absolute right-0 top-12 z-50 w-52 rounded-2xl border border-gold/25 bg-ivory p-1.5 shadow-xl">
-                <Link role="menuitem" to="/profile" className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm text-veda-text hover:bg-gold-pale/50">
-                  <UserRound size={17} aria-hidden /> My Profile
-                </Link>
+                {current === 'profile' ? (
+                  <Link role="menuitem" to="/dashboard" className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm text-veda-text hover:bg-gold-pale/50">
+                    <LayoutDashboard size={17} aria-hidden /> Dashboard
+                  </Link>
+                ) : (
+                  <Link role="menuitem" to="/profile" className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm text-veda-text hover:bg-gold-pale/50">
+                    <UserRound size={17} aria-hidden /> Profile
+                  </Link>
+                )}
                 <button
                   type="button"
                   role="menuitem"
@@ -197,7 +205,7 @@ export default function DashboardHeader({ cartCount, notifications, seen, onSeen
                   }}
                   className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm text-veda-text hover:bg-gold-pale/50"
                 >
-                  <LogOut size={17} aria-hidden /> Sign out
+                  <LogOut size={17} aria-hidden /> Logout
                 </button>
               </div>
             )}

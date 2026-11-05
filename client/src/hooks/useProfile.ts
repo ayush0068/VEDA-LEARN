@@ -80,7 +80,24 @@ export const useProfile = () => {
     }
   }, []);
 
-  return { profile, loading, error, reload: load, save, setAvatar, setEmail, toggleNotification, togglePrivacy };
+  /** shown at once (the search button moves right away); put back if the server refuses */
+  const setSearchSide = useCallback(
+    async (side: 'left' | 'right') => {
+      const previous = profile?.searchSide ?? 'right';
+      setProfile((prev) => (prev ? { ...prev, searchSide: side } : prev));
+      updateUser({ searchSide: side });
+      try {
+        await profileApi.saveSearchSide(side);
+      } catch (err) {
+        setProfile((prev) => (prev ? { ...prev, searchSide: previous } : prev));
+        updateUser({ searchSide: previous });
+        throw err;
+      }
+    },
+    [profile?.searchSide, updateUser],
+  );
+
+  return { profile, loading, error, reload: load, save, setAvatar, setEmail, toggleNotification, togglePrivacy, setSearchSide };
 };
 
 export type ProfileState = ReturnType<typeof useProfile>;

@@ -23,6 +23,8 @@ router.patch('/password', credentialsLimiter, controller.updatePassword);
 router.patch('/notifications', controller.updateNotifications);
 router.patch('/privacy', controller.updatePrivacy);
 
+router.patch('/preferences', controller.updatePreferences);
+
 router.get('/orders', controller.getOrders);
 
 module.exports = router;

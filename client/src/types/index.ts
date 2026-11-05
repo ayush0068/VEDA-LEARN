@@ -72,6 +72,8 @@ export interface User {
   role: 'student' | 'admin';
   /** profile photo (small data URL), empty when none was uploaded */
   avatar?: string;
+  /** side of the screen for the phone search button */
+  searchSide?: 'left' | 'right';
   createdAt?: string;
 }
 

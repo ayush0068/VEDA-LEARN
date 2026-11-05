@@ -42,6 +42,11 @@ export const savePrivacy = async (values: Partial<PrivacyPrefs>): Promise<Privac
   return data.data.privacy;
 };
 
+export const saveSearchSide = async (searchSide: 'left' | 'right'): Promise<'left' | 'right'> => {
+  const { data } = await api.patch<ApiItemResponse<{ searchSide: 'left' | 'right' }>>('/profile/preferences', { searchSide });
+  return data.data.searchSide;
+};
+
 export const getOrders = async (): Promise<Order[]> => {
   const { data } = await api.get<ApiItemResponse<{ orders: Order[] }>>('/profile/orders');
   return data.data.orders;

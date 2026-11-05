@@ -1,10 +1,8 @@
-import { X } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
-import DashboardSidebar from '@/components/dashboard/DashboardSidebar';
-import DashLogo from '@/components/dashboard/DashLogo';
 import { LiveToast, useLiveToast } from '@/components/live/LiveCommon';
+import ProfileDrawer from '@/components/profile/ProfileDrawer';
 import ProfileHero from '@/components/profile/ProfileHero';
 import ProfileLandscape from '@/components/profile/ProfileLandscape';
 import { ProfileSkeleton } from '@/components/profile/ProfileParts';
@@ -37,19 +35,13 @@ export default function Profile() {
     setDrawer(false);
     window.scrollTo({ top: 0 });
   }, [location.pathname]);
-  useEffect(() => {
-    document.body.style.overflow = drawer ? 'hidden' : '';
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [drawer]);
 
   const { profile, loading, error, reload } = state;
   const ctx: ProfileContextValue | null = profile ? { ...state, profile, notify: show } : null;
 
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-gradient-to-b from-[#fef1e2] via-[#fef6ef] to-[#fdecd3]">
-      <DashboardHeader hideUserName cartCount={count} notifications={notifications} seen={seen} onSeen={markSeen} onOpenMenu={() => setDrawer(true)} />
+      <DashboardHeader current="profile" hideUserName cartCount={count} notifications={notifications} seen={seen} onSeen={markSeen} onOpenMenu={() => setDrawer(true)} />
 
       <ProfileHero />
 
@@ -74,21 +66,8 @@ export default function Profile() {
 
       <ProfileLandscape />
 
-      {/* phone: menu button of the top bar opens the student menu */}
-      {drawer && (
-        <div className="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true" aria-label="Menu">
-          <button type="button" aria-label="Close menu" onClick={() => setDrawer(false)} className="animate-fade-in absolute inset-0 bg-veda-bark/50" />
-          <div className="animate-fade-in absolute inset-y-0 left-0 flex w-[17.5rem] max-w-[85vw] flex-col bg-ivory shadow-2xl">
-            <div className="flex items-center justify-between px-4 py-3">
-              <DashLogo compact />
-              <button type="button" onClick={() => setDrawer(false)} aria-label="Close menu" className="flex h-9 w-9 items-center justify-center rounded-full hover:bg-gold-pale/60">
-                <X size={20} aria-hidden />
-              </button>
-            </div>
-            <DashboardSidebar className="flex-1" onNavigate={() => setDrawer(false)} />
-          </div>
-        </div>
-      )}
+      {/* phone: the menu button of the top bar opens the profile sections */}
+      <ProfileDrawer open={drawer} onClose={() => setDrawer(false)} />
 
       <LiveToast message={message} />
     </div>

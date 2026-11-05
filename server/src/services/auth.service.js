@@ -15,6 +15,7 @@ const toPublicUser = (user) => ({
   email: user.email,
   role: user.role,
   avatar: user.avatar || '',
+  searchSide: user.searchSide === 'left' ? 'left' : 'right',
   createdAt: user.createdAt,
 });
 

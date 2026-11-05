@@ -27,6 +27,9 @@ const userSchema = new mongoose.Schema(
     bio: { type: String, trim: true, maxlength: 300, default: '' },
     avatar: { type: String, default: '' }, // small image as a data URL (resized in the browser)
 
+    // which side of the screen the phone search button sits on (left-handed users can pick 'left')
+    searchSide: { type: String, enum: ['left', 'right'], default: 'right' },
+
     notifications: {
       liveClasses: bool(true),
       courseUpdates: bool(true),

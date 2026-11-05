@@ -15,7 +15,7 @@ type Phase = 'hidden' | 'open' | 'icon';
 
 /**
  * Phones / tablets only, signed-in users only. The navbar search icon is replaced by a round search button at
- * the bottom right. On the home page, once the page is still at the top, it slides in from the right as
+ * the bottom right. On the home page, once the page is still at the top, it slides in from its side (right by default) as
  * "Search here" for 5 seconds and then shrinks to the icon. Tapping it opens a search bar at the bottom.
  */
 export default function MobileSearchFab() {
@@ -92,6 +92,7 @@ export default function MobileSearchFab() {
   // pages with their own bottom bar (course page, live classes) get the button a little higher
   const raised = pathname.startsWith('/courses/') || pathname.startsWith('/live-classes');
   const open = phase === 'open';
+  const left = user.searchSide === 'left'; // set in Profile > Privacy & Settings (for left-handed use)
 
   return (
     <div className="lg:hidden">
@@ -125,13 +126,17 @@ export default function MobileSearchFab() {
           type="button"
           onClick={() => setSheetOpen(true)}
           aria-label="Search courses"
-          className={`fixed right-4 z-50 flex h-12 items-center overflow-hidden rounded-full bg-veda-brown text-ivory shadow-lg shadow-veda-brown/30 transition-[transform,opacity] duration-500 ease-out ${
-            raised ? 'bottom-24' : 'bottom-5'
-          } ${phase === 'hidden' ? 'pointer-events-none translate-x-[140%] opacity-0' : 'translate-x-0 opacity-100'}`}
+          className={`fixed z-50 flex h-12 items-center overflow-hidden rounded-full bg-veda-brown text-ivory shadow-lg shadow-veda-brown/30 transition-[transform,opacity] duration-500 ease-out ${
+            left ? 'left-4 flex-row-reverse' : 'right-4'
+          } ${raised ? 'bottom-24' : 'bottom-5'} ${
+            phase === 'hidden'
+              ? `pointer-events-none opacity-0 ${left ? '-translate-x-[140%]' : 'translate-x-[140%]'}`
+              : 'translate-x-0 opacity-100'
+          }`}
         >
           <span
             className={`overflow-hidden whitespace-nowrap text-[0.9rem] font-medium transition-[max-width,padding,opacity] duration-500 ease-out ${
-              open ? 'max-w-[9rem] pl-5 opacity-100' : 'max-w-0 pl-0 opacity-0'
+              open ? `max-w-[9rem] opacity-100 ${left ? 'pr-5' : 'pl-5'}` : 'max-w-0 p-0 opacity-0'
             }`}
           >
             Search here

@@ -65,6 +65,11 @@ const updatePrivacy = async (user, values) => {
   return pick(updated.privacy, PRIVACY_KEYS);
 };
 
+const updateSearchSide = async (user, searchSide) => {
+  await User.updateOne({ _id: user._id }, { $set: { searchSide } });
+  return { searchSide };
+};
+
 const assertPassword = async (userId, password) => {
   const withHash = await User.findById(userId).select('+passwordHash');
   const ok = await bcrypt.compare(password, withHash.passwordHash);
@@ -128,6 +133,7 @@ module.exports = {
   setAvatar,
   updateNotifications,
   updatePrivacy,
+  updateSearchSide,
   changeEmail,
   changePassword,
   listOrders,
