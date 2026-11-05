@@ -2,6 +2,7 @@ import { LayoutDashboard, LogOut, Menu, Search, ShoppingCart, UserRound, X } fro
 import { FormEvent, useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import Logo from '@/components/common/Logo';
+import MobileMenu from './MobileMenu';
 import Avatar from '@/components/course/Avatar';
 import { DASH_AVATAR_SRC } from '@/constants/dashboard';
 import { NAV_ITEMS } from '@/constants/navigation';
@@ -240,12 +241,13 @@ export default function Navbar({ cartCount = 0 }: NavbarProps) {
 
           <button
             type="button"
-            onClick={() => setMobileOpen((v) => !v)}
+            onClick={() => setMobileOpen(true)}
             className="rounded-full p-2 text-veda-brown transition-colors duration-200 hover:bg-gold-pale/60 lg:hidden"
-            aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
+            aria-label="Open menu"
             aria-expanded={mobileOpen}
+            aria-haspopup="dialog"
           >
-            {mobileOpen ? <X size={22} /> : <Menu size={22} />}
+            <Menu size={22} />
           </button>
         </div>
       </nav>
@@ -280,48 +282,7 @@ export default function Navbar({ cartCount = 0 }: NavbarProps) {
         </div>
       )}
 
-      {/* Mobile menu */}
-      {mobileOpen && (
-        <div className="animate-fade-in border-t border-gold/20 bg-ivory lg:hidden">
-          <ul className="mx-auto max-w-7xl space-y-1 px-4 py-4 sm:px-6">
-            {NAV_ITEMS.map((item) => (
-              <li key={item.to}>
-                <NavLink
-                  to={item.to}
-                  end={item.to === '/'}
-                  className={({ isActive }) =>
-                    `block rounded-lg px-3 py-2.5 text-[0.95rem] font-medium ${
-                      isActive
-                        ? 'bg-gold-pale/60 text-saffron'
-                        : 'text-veda-text hover:bg-cream'
-                    }`
-                  }
-                >
-                  {item.label}
-                </NavLink>
-              </li>
-            ))}
-
-            {!user && (
-              <li className="grid grid-cols-2 gap-3 pt-3 sm:hidden">
-                <Link
-                  to="/login"
-                  className="btn-outline rounded-full"
-                >
-                  Login
-                </Link>
-
-                <Link
-                  to="/register"
-                  className="btn-primary rounded-full"
-                >
-                  Join Now
-                </Link>
-              </li>
-            )}
-          </ul>
-        </div>
-      )}
+      <MobileMenu open={mobileOpen} onClose={() => setMobileOpen(false)} />
     </header>
   );
 }
