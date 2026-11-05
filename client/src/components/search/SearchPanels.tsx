@@ -6,7 +6,7 @@ import type { Course } from '@/types';
 import { formatPrice } from '@/utils/format';
 import { highlightSegments } from '@/utils/search';
 
-const GLASS = 'border border-white/70 bg-white/45 backdrop-blur-md shadow-[0_8px_30px_-14px_rgba(90,45,15,0.35)]';
+const GLASS = 'border border-white/70 bg-white/55 shadow-[0_6px_20px_-12px_rgba(90,45,15,0.35)]';
 
 const categoryLabel = (slug: string): string =>
   COURSE_TABS.find((t) => t.slug === slug)?.label ?? slug.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
@@ -103,7 +103,7 @@ export function IdlePanel({
   return (
     <div className="space-y-7">
       {recent.length > 0 && (
-        <section style={{ animationDelay: '120ms' }} className="animate-rise-in">
+        <section data-rise>
           <SectionTitle
             icon={<Clock size={14} aria-hidden />}
             action={
@@ -129,7 +129,7 @@ export function IdlePanel({
         </section>
       )}
 
-      <section style={{ animationDelay: '170ms' }} className="animate-rise-in">
+      <section data-rise>
         <SectionTitle icon={<Flame size={14} aria-hidden />}>Trending searches</SectionTitle>
         <ul className="grid gap-2 sm:grid-cols-2">
           {trending.map((term, i) => (
@@ -150,7 +150,7 @@ export function IdlePanel({
         </ul>
       </section>
 
-      <section style={{ animationDelay: '220ms' }} className="animate-rise-in">
+      <section data-rise>
         <SectionTitle icon={<Sparkles size={14} aria-hidden />}>Suggested for you</SectionTitle>
         <div className="grid gap-2.5 sm:grid-cols-2">
           {suggested.map((course, i) => (
@@ -159,7 +159,7 @@ export function IdlePanel({
         </div>
       </section>
 
-      <section style={{ animationDelay: '270ms' }} className="animate-rise-in">
+      <section data-rise>
         <SectionTitle icon={<Sparkles size={14} aria-hidden />}>Browse by topic</SectionTitle>
         <div className="flex flex-wrap gap-2">
           {COURSE_TABS.filter((t) => t.slug !== 'all').map((tab) => (

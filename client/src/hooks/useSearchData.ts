@@ -19,21 +19,32 @@ export const useSearchData = (query: string, active: boolean) => {
   const overviewLoaded = useRef(false);
   const requestId = useRef(0);
 
+  // overview is fetched shortly after the page loads (not while the animation plays) and retried on open if it failed
   useEffect(() => {
-    if (!active || overviewLoaded.current) return;
-    overviewLoaded.current = true;
-    getSearchOverview()
-      .then((data) => {
-        if (data.trending.length > 0 || data.suggested.length > 0) {
-          setOverview({
-            trending: data.trending.length > 0 ? data.trending : localOverview(DEFAULT_CATALOG).trending,
-            suggested: data.suggested.length > 0 ? data.suggested : localOverview(DEFAULT_CATALOG).suggested,
-          });
-        }
-      })
-      .catch(() => {
-        overviewLoaded.current = false; // try again next time the page opens
-      });
+    const load = () => {
+      if (overviewLoaded.current) return;
+      overviewLoaded.current = true;
+      getSearchOverview()
+        .then((data) => {
+          const fallback = localOverview(DEFAULT_CATALOG);
+          if (data.trending.length > 0 || data.suggested.length > 0) {
+            setOverview({
+              trending: data.trending.length > 0 ? data.trending : fallback.trending,
+              suggested: data.suggested.length > 0 ? data.suggested : fallback.suggested,
+            });
+          }
+        })
+        .catch(() => {
+          overviewLoaded.current = false;
+        });
+    };
+
+    if (active) {
+      load();
+      return;
+    }
+    const timer = window.setTimeout(load, 1500);
+    return () => window.clearTimeout(timer);
   }, [active]);
 
   useEffect(() => {
