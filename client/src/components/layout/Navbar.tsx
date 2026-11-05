@@ -1,12 +1,13 @@
-import { LayoutDashboard, LogOut, Menu, Search, ShoppingCart, UserRound, X } from 'lucide-react';
-import { FormEvent, useEffect, useRef, useState } from 'react';
-import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { LayoutDashboard, LogOut, Menu, Search, ShoppingCart, UserRound } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { Link, NavLink, useLocation } from 'react-router-dom';
 import Logo from '@/components/common/Logo';
 import MobileMenu from './MobileMenu';
 import Avatar from '@/components/course/Avatar';
 import { DASH_AVATAR_SRC } from '@/constants/dashboard';
 import { NAV_ITEMS } from '@/constants/navigation';
 import { useAuth } from '@/context/AuthContext';
+import { useSearch } from '@/context/SearchContext';
 
 interface NavbarProps {
   cartCount?: number;
@@ -14,16 +15,13 @@ interface NavbarProps {
 
 export default function Navbar({ cartCount = 0 }: NavbarProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [query, setQuery] = useState('');
   const [isScrolled, setIsScrolled] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
 
-  const searchRef = useRef<HTMLInputElement>(null);
-  const navigate = useNavigate();
   const location = useLocation();
   const { user, logout } = useAuth();
+  const { isOpen: searchOpen, openSearch } = useSearch();
 
   // Detect scroll position
   useEffect(() => {
@@ -40,18 +38,12 @@ export default function Navbar({ cartCount = 0 }: NavbarProps) {
   // Close menus on route change
   useEffect(() => {
     setMobileOpen(false);
-    setSearchOpen(false);
     setUserMenuOpen(false);
   }, [location.pathname]);
 
   useEffect(() => {
-    if (searchOpen) searchRef.current?.focus();
-  }, [searchOpen]);
-
-  useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        setSearchOpen(false);
         setMobileOpen(false);
         setUserMenuOpen(false);
       }
@@ -81,16 +73,6 @@ export default function Navbar({ cartCount = 0 }: NavbarProps) {
   useEffect(() => {
     if (!user) setUserMenuOpen(false);
   }, [user]);
-
-  const onSearch = (e: FormEvent) => {
-    e.preventDefault();
-    const q = query.trim();
-
-    if (!q) return;
-
-    navigate(`/courses?q=${encodeURIComponent(q)}`);
-    setQuery('');
-  };
 
   const linkClass = ({ isActive }: { isActive: boolean }) =>
     `relative py-2 text-[0.92rem] font-medium transition-colors duration-200 ${
@@ -136,14 +118,16 @@ export default function Navbar({ cartCount = 0 }: NavbarProps) {
         <div className="flex items-center gap-1.5 sm:gap-3">
           <button
             type="button"
-            onClick={() => setSearchOpen((v) => !v)}
+            data-search-trigger
+            onClick={(e) => openSearch(e.currentTarget)}
             className={`rounded-full p-2 text-veda-brown transition-colors duration-200 hover:bg-gold-pale/60 ${
               user ? 'hidden lg:block' : '' // signed in: phones use the round search button at the bottom right
             }`}
             aria-label="Search courses"
+            aria-haspopup="dialog"
             aria-expanded={searchOpen}
           >
-            {searchOpen ? <X size={20} /> : <Search size={20} />}
+            <Search size={20} />
           </button>
 
           <Link
@@ -251,36 +235,6 @@ export default function Navbar({ cartCount = 0 }: NavbarProps) {
           </button>
         </div>
       </nav>
-
-      {/* Search bar */}
-      {searchOpen && (
-        <div className="animate-fade-in border-t border-gold/20 bg-cream/70">
-          <form
-            onSubmit={onSearch}
-            className="mx-auto flex max-w-3xl items-center gap-2 px-4 py-3 sm:px-6"
-            role="search"
-          >
-            <Search
-              size={18}
-              className="text-veda-muted"
-              aria-hidden="true"
-            />
-
-            <input
-              ref={searchRef}
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search Vedic Astrology, Vastu, Bhagavad Gita…"
-              className="w-full bg-transparent py-1.5 text-sm text-veda-bark placeholder:text-veda-muted focus:outline-none"
-              aria-label="Search courses"
-            />
-
-            <button type="submit" className="btn-primary px-4 py-1.5">
-              Search
-            </button>
-          </form>
-        </div>
-      )}
 
       <MobileMenu open={mobileOpen} onClose={() => setMobileOpen(false)} />
     </header>
