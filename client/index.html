@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="en">
   <head>
@@ -7,25 +6,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <!-- SEO -->
+    <title>VedaLearn | Ancient Wisdom. Online, For You.</title>
     <meta
       name="description"
-      content="VedaLearn - Learn authentic Vedic courses online, attend live classes and learn from experienced teachers."
+      content="VedaLearn (Veda Learn) - Learn authentic Vedic courses online: Vedic Astrology, Vastu Shastra, Bhagavad Gita, Mantra Science, Yoga and Ayurveda. Attend live classes and learn from experienced teachers."
     />
+    <!--- Google search console verification -->
+    <meta name="google-site-verification" content="EI_crigduFkQAY48CJo3eXbRMg1uAHLmT-qisHS_xeM" />
+
+    <!--- Twitter cards -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="VedaLearn | Ancient Wisdom. Online, For You." />
+    <meta
+      name="twitter:description"
+      content="Explore authentic Vedic courses, attend live classes, and learn ancient Indian wisdom from experienced teachers."
+    />
+    <meta name="twitter:image" content="https://learn-veda.vercel.app/og-image.png" />
+    <meta
+      name="keywords"
+      content="VedaLearn, Veda Learn, learn Vedic courses online, Vedic astrology course, Vastu Shastra course, Bhagavad Gita course, mantra science, yoga and meditation, Ayurveda, Sanatan Dharma, live Vedic classes"
+    />
+    <meta name="author" content="VedaLearn" />
+    <meta name="application-name" content="VedaLearn" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
+    <link rel="canonical" href="https://learn-veda.vercel.app/" />
     <meta name="theme-color" content="#FBF1DD" />
 
     <!-- Open Graph / WhatsApp / Facebook / LinkedIn -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="VedaLearn" />
+    <meta property="og:locale" content="en_IN" />
     <meta property="og:title" content="VedaLearn | Ancient Wisdom. Online, For You." />
     <meta
       property="og:description"
       content="Explore authentic Vedic courses, attend live classes, and learn ancient Indian wisdom from experienced teachers."
     />
     <meta property="og:url" content="https://learn-veda.vercel.app/" />
-    <meta
-      property="og:image"
-      content="https://learn-veda.vercel.app/og-image.jpg"
-    />
+    <meta property="og:image" content="https://learn-veda.vercel.app/og-image.jpg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="VedaLearn - Ancient Wisdom. Online, For You." />
@@ -37,10 +54,42 @@
       name="twitter:description"
       content="Explore authentic Vedic courses, attend live classes, and learn ancient Indian wisdom from experienced teachers."
     />
-    <meta
-      name="twitter:image"
-      content="https://learn-veda.vercel.app/og-image.jpg"
-    />
+    <meta name="twitter:image" content="https://learn-veda.vercel.app/og-image.jpg" />
+
+    <!-- Structured data: tells Google the site name ("VedaLearn" / "Veda Learn") and that the site has a course search -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "@id": "https://learn-veda.vercel.app/#website",
+            "url": "https://learn-veda.vercel.app/",
+            "name": "VedaLearn",
+            "alternateName": ["Veda Learn", "VedaLearn Online", "Learn Veda"],
+            "description": "Learn authentic Vedic courses online and attend live classes with experienced teachers.",
+            "inLanguage": "en-IN",
+            "potentialAction": {
+              "@type": "SearchAction",
+              "target": "https://learn-veda.vercel.app/courses?q={search_term_string}",
+              "query-input": "required name=search_term_string"
+            }
+          },
+          {
+            "@type": "EducationalOrganization",
+            "@id": "https://learn-veda.vercel.app/#organization",
+            "name": "VedaLearn",
+            "alternateName": "Veda Learn",
+            "url": "https://learn-veda.vercel.app/",
+            "logo": "https://learn-veda.vercel.app/favicon.svg",
+            "slogan": "Ancient Wisdom. Online, For You."
+          }
+        ]
+      }
+    </script>
+
+    <!-- starts downloading the home banner right away (it is the biggest picture on the first screen) -->
+    <link rel="preload" as="image" href="/images/Home-banner.png" fetchpriority="high" />
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -49,12 +98,17 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Serif+Devanagari:wght@600;700&family=Playfair+Display:wght@500;600;700&display=swap"
       rel="stylesheet"
     />
-
-    <title>VedaLearn | Ancient Wisdom. Online, For You.</title>
   </head>
 
   <body>
     <div id="root"></div>
+    <noscript>
+      <h1>VedaLearn - Ancient Wisdom. Online, For You.</h1>
+      <p>
+        Learn authentic Vedic courses online: Vedic Astrology, Vastu Shastra, Bhagavad Gita, Mantra Science, Yoga and
+        Ayurveda. Please enable JavaScript to use VedaLearn.
+      </p>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+# private / signed-in pages
+Disallow: /dashboard
+Disallow: /profile
+Disallow: /cart
+Disallow: /checkout
+Disallow: /login
+Disallow: /register
+Disallow: /forgot-password
+
+Sitemap: https://learn-veda.vercel.app/sitemap.xml
