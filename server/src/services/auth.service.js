@@ -16,6 +16,7 @@ const toPublicUser = (user) => ({
   role: user.role,
   avatar: user.avatar || '',
   searchSide: user.searchSide === 'left' ? 'left' : 'right',
+  mustChangePassword: Boolean(user.mustChangePassword),
   createdAt: user.createdAt,
 });
 

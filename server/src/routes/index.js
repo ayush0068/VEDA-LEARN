@@ -1,4 +1,5 @@
 const { Router } = require('express');
+const adminRoutes = require('./admin');
 const authRoutes = require('./auth.routes');
 const cartRoutes = require('./cart.routes');
 const categoryRoutes = require('./category.routes');
@@ -24,8 +25,8 @@ router.use('/contact', contactRoutes);
 router.use('/dashboard', dashboardRoutes);
 router.use('/profile', profileRoutes);
 router.use('/search', searchRoutes);
+router.use('/admin', adminRoutes);
 
 // Future milestones plug in here, e.g.:
-// router.use('/admin', protect, restrictTo('admin'), adminRoutes);   // used by the future admin/ panel
 
 module.exports = router;

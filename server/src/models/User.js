@@ -14,6 +14,8 @@ const userSchema = new mongoose.Schema(
     passwordHash: { type: String, required: true, select: false },
     role: { type: String, enum: ['student', 'admin'], default: 'student' },
     isActive: { type: Boolean, default: true },
+    // true while the account still has an admin-generated temporary password: the student must set their own on first login
+    mustChangePassword: { type: Boolean, default: false },
     lastLoginAt: { type: Date },
     // tokens issued before this moment are rejected (set when the password is changed)
     passwordChangedAt: { type: Date },

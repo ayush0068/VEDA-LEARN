@@ -64,6 +64,19 @@ const env = {
   // page is not empty. ON outside production by default; set DEMO_DASHBOARD=false to start students empty.
   demoDashboard: toBool(process.env.DEMO_DASHBOARD, !isProduction),
 
+  // Where students sign in (used in the credentials e-mail). Defaults to the first allowed frontend.
+  publicSiteUrl: (process.env.PUBLIC_SITE_URL || toList(process.env.CLIENT_URLS, ['http://localhost:5173'])[0]).replace(/\/+$/, ''),
+
+  // Optional SMTP settings. Without them the admin panel falls back to the admin's own mail app (mailto:).
+  smtp: {
+    host: process.env.SMTP_HOST || '',
+    port: Number(process.env.SMTP_PORT) || 587,
+    secure: toBool(process.env.SMTP_SECURE, false),
+    user: process.env.SMTP_USER || '',
+    pass: process.env.SMTP_PASS || '',
+    from: process.env.MAIL_FROM || process.env.SMTP_USER || '',
+  },
+
   jwtSecret,
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '1d',
   jwtRememberExpiresIn:

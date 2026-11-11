@@ -1,0 +1,91 @@
+@import "tailwindcss";
+
+/* Same palette as the public VedaLearn site, plus the admin-only tones from the dashboard design */
+@theme {
+  --color-ivory: #fffaf0;
+  --color-cream: #fbf1dd;
+  --color-cream-deep: #f5e3bf;
+  --color-veda-brown: #5a2d0f;
+  --color-veda-bark: #3e1f0b;
+  --color-veda-text: #4b4036;
+  --color-veda-muted: #7c6a58;
+  --color-gold: #c58b2b;
+  --color-gold-soft: #e3c285;
+  --color-gold-pale: #f1dfb4;
+  --color-saffron: #c26a1b;
+
+  --color-sand: #fbebd6;
+  --color-sand-deep: #f8dfc0;
+  --color-card: #fff9f0;
+  --color-line: #f0ddbf;
+  --color-peach: #fbe6cb;
+  --color-ok: #2e9b3e;
+
+  --font-display: "Playfair Display", Georgia, "Times New Roman", serif;
+  --font-sans: Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  --shadow-card: 0 8px 24px -14px rgba(122, 62, 20, 0.35);
+
+  --animate-fade-in: fade-in 0.25s ease-out both;
+  --animate-rise-in: rise-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-pop-in: pop-in 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-sheet-in: sheet-in 0.32s cubic-bezier(0.32, 0.72, 0, 1) both;
+  --animate-drawer-in: drawer-in 0.34s cubic-bezier(0.32, 0.72, 0, 1) both;
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes pop-in {
+    from { opacity: 0; transform: translateY(10px) scale(0.97); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  @keyframes sheet-in {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes drawer-in {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+  }
+  @keyframes rise-in {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+  /* a touch smaller on desktop so the dashboard does not look oversized */
+  @media (min-width: 1024px) {
+    html { font-size: 14.5px; }
+  }
+  body {
+    @apply bg-sand font-sans text-veda-text antialiased;
+    background-image: linear-gradient(180deg, #fcefdc 0%, #f9e3c6 100%);
+    background-attachment: fixed;
+  }
+  :focus-visible {
+    outline: 2px solid #c58b2b;
+    outline-offset: 2px;
+    border-radius: 8px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer utilities {
+  /* slim scrollbar for the sidebar */
+  .thin-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(197, 139, 43, 0.35) transparent;
+  }
+  .thin-scroll::-webkit-scrollbar { width: 6px; }
+  .thin-scroll::-webkit-scrollbar-thumb { background: rgba(197, 139, 43, 0.35); border-radius: 999px; }
+}

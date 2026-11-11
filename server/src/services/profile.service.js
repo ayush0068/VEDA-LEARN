@@ -104,6 +104,7 @@ const changePassword = async (user, { currentPassword, newPassword, remember }) 
   withHash.passwordHash = await bcrypt.hash(newPassword, BCRYPT_ROUNDS);
   // whole seconds, so the token signed right below (same second) is still accepted
   withHash.passwordChangedAt = new Date(Math.floor(Date.now() / 1000) * 1000);
+  withHash.mustChangePassword = false;
   await withHash.save();
 
   return { token: signToken(withHash, remember) };
@@ -128,6 +129,7 @@ const listOrders = async (user) => {
 module.exports = {
   NOTIFICATION_KEYS,
   PRIVACY_KEYS,
+  ensureStudentId,
   getProfile,
   updateProfile,
   setAvatar,

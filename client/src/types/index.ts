@@ -74,6 +74,8 @@ export interface User {
   avatar?: string;
   /** side of the screen for the phone search button */
   searchSide?: 'left' | 'right';
+  /** true while the account still uses a temporary password an admin generated (must be changed first) */
+  mustChangePassword?: boolean;
   createdAt?: string;
 }
 

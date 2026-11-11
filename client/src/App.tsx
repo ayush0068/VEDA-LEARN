@@ -1,4 +1,5 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
+import ForcePasswordChange from '@/components/auth/ForcePasswordChange';
 import RequireAuth from '@/components/auth/RequireAuth';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import MainLayout from '@/components/layout/MainLayout';
@@ -27,6 +28,7 @@ import StudentDashboard from '@/pages/StudentDashboard';
 
 export default function App() {
   return (
+    <>
     <Routes>
       {/* Login / Register have their own full-screen layout (no navbar / footer) */}
       <Route path="login" element={<Login />} />
@@ -70,5 +72,9 @@ export default function App() {
         <Route path="*" element={<PlaceholderPage title="Page not found" />} />
       </Route>
     </Routes>
+
+    {/* blocks the whole site until a student with an admin-generated temporary password sets their own */}
+    <ForcePasswordChange />
+    </>
   );
 }
