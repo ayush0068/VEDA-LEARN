@@ -14,10 +14,12 @@ interface ModalProps {
   /** 'dialog' = centred card (bottom sheet on phones), 'drawer' = panel from the right (full screen on phones) */
   variant?: 'dialog' | 'drawer';
   width?: string;
+  /** max width of the drawer variant, e.g. 'max-w-[640px]' */
+  drawerWidth?: string;
 }
 
 /** Locks page scroll, closes with Esc / backdrop, and puts focus inside when it opens. */
-export default function Modal({ open, onClose, title, subtitle, children, footer, busy = false, variant = 'dialog', width = 'max-w-md' }: ModalProps) {
+export default function Modal({ open, onClose, title, subtitle, children, footer, busy = false, variant = 'dialog', width = 'max-w-md', drawerWidth = 'max-w-[460px]' }: ModalProps) {
   const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -61,7 +63,7 @@ export default function Modal({ open, onClose, title, subtitle, children, footer
         tabIndex={-1}
         className={`relative flex max-h-[92dvh] w-full flex-col bg-ivory shadow-2xl shadow-veda-bark/30 focus:outline-none ${
           isDrawer
-            ? 'h-full max-h-none max-w-[460px] animate-drawer-in border-l border-line'
+            ? `h-full max-h-none ${drawerWidth} animate-drawer-in border-l border-line`
             : `${width} animate-sheet-in rounded-t-3xl border border-line sm:animate-pop-in sm:rounded-2xl`
         }`}
       >

@@ -1,5 +1,6 @@
 import { Ellipsis } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import type { LucideIcon } from 'lucide-react';
 
 export interface MenuItem {
@@ -9,9 +10,12 @@ export interface MenuItem {
   danger?: boolean;
 }
 
-const MENU_WIDTH = 208;
+const MENU_WIDTH = 244;
 
-/** "..." button with a small action menu. The menu is fixed-positioned so the table's scroll area never clips it. */
+/**
+ * "..." button with a small action menu. The menu is rendered in <body> (a portal) so that cards with hover effects
+ * (transform) or later cards on the page can never move it, cover it or make it disappear.
+ */
 export default function RowMenu({ items, label }: { items: MenuItem[]; label: string }) {
   const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -69,12 +73,13 @@ export default function RowMenu({ items, label }: { items: MenuItem[]; label: st
         <Ellipsis size={18} />
       </button>
 
-      {pos && (
+      {pos &&
+        createPortal(
         <div
           ref={menuRef}
           role="menu"
           style={{ top: pos.top, left: pos.left, width: MENU_WIDTH }}
-          className="fixed z-[60] animate-pop-in rounded-xl border border-line bg-ivory p-1.5 shadow-xl shadow-veda-brown/20"
+          className="fixed z-[90] animate-pop-in rounded-xl border border-line bg-ivory p-1.5 shadow-xl shadow-veda-brown/20"
         >
           {items.map(({ label: text, icon: Icon, onClick, danger }) => (
             <button
@@ -91,7 +96,8 @@ export default function RowMenu({ items, label }: { items: MenuItem[]; label: st
               {text}
             </button>
           ))}
-        </div>
+        </div>,
+        document.body,
       )}
     </>
   );

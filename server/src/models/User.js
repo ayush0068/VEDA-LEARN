@@ -12,7 +12,7 @@ const userSchema = new mongoose.Schema(
     name: { type: String, required: true, trim: true, minlength: 2, maxlength: 60 },
     email: { type: String, required: true, unique: true, trim: true, lowercase: true, maxlength: 254 },
     passwordHash: { type: String, required: true, select: false },
-    role: { type: String, enum: ['student', 'admin'], default: 'student' },
+    role: { type: String, enum: ['student', 'instructor', 'admin'], default: 'student' },
     isActive: { type: Boolean, default: true },
     // true while the account still has an admin-generated temporary password: the student must set their own on first login
     mustChangePassword: { type: Boolean, default: false },

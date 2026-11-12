@@ -1,6 +1,7 @@
 const { Router } = require('express');
 const { protect, restrictTo } = require('../../middleware/auth');
 const { createRateLimiter } = require('../../middleware/rateLimit');
+const instructorRoutes = require('./instructors.routes');
 const studentRoutes = require('./students.routes');
 
 const router = Router();
@@ -11,5 +12,6 @@ const limiter = createRateLimiter({ windowMs: 60 * 1000, max: 240, message: 'Too
 router.use(limiter, protect, restrictTo('admin'));
 
 router.use('/students', studentRoutes);
+router.use('/instructors', instructorRoutes);
 
 module.exports = router;
