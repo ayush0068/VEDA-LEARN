@@ -107,7 +107,7 @@ function CourseDetailView({ slug }: { slug: string }) {
   const { has, add } = useCart();
   const { isSaved, toggleSaved } = useSavedCourses();
   const isDesktop = useMediaQuery('(min-width: 1024px)');
-  const { course, detail, related, loaded } = useCourseDetail(slug);
+  const { course, detail, related, loaded, contentReady } = useCourseDetail(slug);
   const [previewOpen, setPreviewOpen] = useState(false);
 
   useEffect(() => {
@@ -124,6 +124,7 @@ function CourseDetailView({ slug }: { slug: string }) {
   }, [course]);
 
   if (!course || !detail) return loaded ? <NotFound /> : <LoadingSkeleton />;
+  if (!contentReady) return <LoadingSkeleton />;
 
   const inCart = has(course.slug);
   const instructorName = course.instructor || 'VedaLearn Faculty';
@@ -256,7 +257,7 @@ function CourseDetailView({ slug }: { slug: string }) {
               </section>
 
               <section id="curriculum" aria-labelledby="curriculum-heading" className="scroll-mt-36">
-                <Curriculum courseSlug={course.slug} modules={detail.curriculum} lessons={lessons} weeks={weeks} />
+                <Curriculum courseSlug={course.slug} syllabusUrl={course.syllabus} modules={detail.curriculum} lessons={lessons} weeks={weeks} />
               </section>
 
               {!isDesktop && (
@@ -288,7 +289,7 @@ function CourseDetailView({ slug }: { slug: string }) {
         <div className="h-10 lg:h-14" aria-hidden />
       </div>
 
-      <PreviewModal open={previewOpen} courseSlug={course.slug} title={course.title} onClose={() => setPreviewOpen(false)} />
+      <PreviewModal open={previewOpen} courseSlug={course.slug} title={course.title} videoUrl={course.previewVideo} onClose={() => setPreviewOpen(false)} />
     </div>
   );
 }

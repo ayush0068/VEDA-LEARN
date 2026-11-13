@@ -2,6 +2,7 @@ import { Route, Routes } from 'react-router-dom';
 import RequireAdmin from '@/components/auth/RequireAdmin';
 import AdminLayout from '@/components/layout/AdminLayout';
 import ComingSoon from '@/pages/ComingSoon';
+import Courses from '@/pages/Courses';
 import Dashboard from '@/pages/Dashboard';
 import Instructors from '@/pages/Instructors';
 import Login from '@/pages/Login';
@@ -20,6 +21,8 @@ export default function App() {
         }
       >
         <Route index element={<Dashboard />} />
+        <Route path="courses" element={<Courses />} />
+        <Route path="courses/new" element={<Courses startWithAdd />} />
         <Route path="instructors" element={<Instructors />} />
         <Route path="instructors/new" element={<Instructors startWithAdd />} />
         <Route path="students" element={<Students />} />

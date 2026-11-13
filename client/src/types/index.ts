@@ -62,6 +62,9 @@ export interface Course {
   level?: string; // Beginner | Intermediate | Advanced | All Levels
   language?: string; // English | Hindi
   createdAt?: string; // ISO date, used by "Newest"
+  // Course page media (set in the admin panel)
+  previewVideo?: string; // uploaded file, or a YouTube / mp4 link
+  syllabus?: string; // syllabus PDF link
 }
 
 // Auth

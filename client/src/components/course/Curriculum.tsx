@@ -10,12 +10,14 @@ const CIRCLE = ['bg-gold', 'bg-[#b8741f]', 'bg-saffron', 'bg-[#9a5516]', 'bg-ved
 
 interface CurriculumProps {
   courseSlug: string;
+  /** syllabus PDF set in the admin panel; empty = public/downloads/<slug>-syllabus.pdf */
+  syllabusUrl?: string;
   modules: CurriculumModule[];
   lessons: number;
   weeks: number;
 }
 
-export default function Curriculum({ courseSlug, modules, lessons, weeks }: CurriculumProps) {
+export default function Curriculum({ courseSlug, syllabusUrl, modules, lessons, weeks }: CurriculumProps) {
   const [open, setOpen] = useState<Set<number>>(() => new Set());
   const [checking, setChecking] = useState(false);
   const [syllabusNote, setSyllabusNote] = useState('');
@@ -32,10 +34,13 @@ export default function Curriculum({ courseSlug, modules, lessons, weeks }: Curr
   const downloadSyllabus = async () => {
     setChecking(true);
     setSyllabusNote('');
-    const url = syllabusFile(courseSlug);
-    if (await fileExists(url, 'pdf')) {
+    const url = syllabusUrl || syllabusFile(courseSlug);
+    // a PDF the admin attached is trusted; the default public/ file is checked first
+    if (syllabusUrl || (await fileExists(url, 'pdf'))) {
       const a = document.createElement('a');
       a.href = url;
+      a.target = '_blank';
+      a.rel = 'noopener';
       a.download = `${courseSlug}-syllabus.pdf`;
       document.body.appendChild(a);
       a.click();

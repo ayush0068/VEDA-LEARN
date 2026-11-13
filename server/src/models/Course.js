@@ -4,7 +4,7 @@ const LEVELS = ['Beginner', 'Intermediate', 'Advanced', 'All Levels'];
 
 /**
  * Courses shown on the website (homepage "Popular Courses", the Explore Courses page and the cart).
- * The future admin panel will create/edit these (pricing, badges, popularity) through the same model.
+ * The admin panel (Courses page) creates/edits these (pricing, badges, popularity) through the same model.
  */
 const courseSchema = new mongoose.Schema(
   {
@@ -13,7 +13,11 @@ const courseSchema = new mongoose.Schema(
     // Category slug used by the Courses page chips, e.g. "vedic-astrology", "ancient-texts"
     category: { type: String, required: true, trim: true, lowercase: true, index: true },
     // Path inside client/public (e.g. /images/courses/vastu-shastra-complete-course.png) or a full URL
-    image: { type: String, default: '', trim: true },
+    image: { type: String, default: '', trim: true, maxlength: 500 },
+    // Preview video of the course page: an uploaded file, a path inside client/public, or a YouTube / mp4 link
+    previewVideo: { type: String, default: '', trim: true, maxlength: 500 },
+    // Syllabus PDF (uploaded file or link) for the "Download Syllabus" button
+    syllabus: { type: String, default: '', trim: true, maxlength: 500 },
     // lucide icon key used as fallback when the image is missing
     icon: { type: String, default: 'sparkles', trim: true },
     // Teacher name shown in the cart

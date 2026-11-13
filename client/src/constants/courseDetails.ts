@@ -263,6 +263,50 @@ const OVERRIDES: Record<string, Partial<CourseDetail>> = {
   },
 };
 
+/** What the admin panel saved for the course page. Every part is optional (empty = use the automatic text). */
+export interface CourseContentData {
+  tagline?: string;
+  about?: string;
+  tags?: string[];
+  highlights?: Highlight[];
+  learn?: string[];
+  audience?: string[];
+  curriculum?: CurriculumModule[];
+  instructor?: Partial<InstructorInfo>;
+  ratingCount?: number;
+  faqs?: FaqItem[];
+  bannerTitle?: string;
+}
+
+const list = <T,>(items: T[] | undefined, fallback: T[]): T[] => (items && items.length > 0 ? items : fallback);
+
+/** Puts the content written in the admin panel on top of the generated one, field by field. */
+export const applyContent = (base: CourseDetail, content: CourseContentData | null | undefined): CourseDetail => {
+  if (!content) return base;
+  const i = content.instructor ?? {};
+  return {
+    ...base,
+    tagline: content.tagline || base.tagline,
+    about: content.about || base.about,
+    tags: list(content.tags, base.tags),
+    highlights: list(content.highlights, base.highlights),
+    learn: list(content.learn, base.learn),
+    audience: list(content.audience, base.audience),
+    curriculum: list(content.curriculum, base.curriculum),
+    faqs: list(content.faqs, base.faqs),
+    bannerTitle: content.bannerTitle || base.bannerTitle,
+    ratingCount: content.ratingCount || base.ratingCount,
+    instructor: {
+      title: i.title || base.instructor.title,
+      experience: i.experience || base.instructor.experience,
+      bio: i.bio || base.instructor.bio,
+      coursesConducted: i.coursesConducted || base.instructor.coursesConducted,
+      students: i.students || base.instructor.students,
+      rating: i.rating || base.instructor.rating,
+    },
+  };
+};
+
 export const getCourseDetail = (course: Course): CourseDetail => {
   const base = generic(course);
   const override = OVERRIDES[course.slug];

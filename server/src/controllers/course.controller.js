@@ -1,5 +1,5 @@
 const { getDbState } = require('../config/db');
-const { getActiveCourses } = require('../services/course.service');
+const { getActiveCourses, getCourseWithContent } = require('../services/course.service');
 const ApiError = require('../utils/ApiError');
 const asyncHandler = require('../utils/asyncHandler');
 
@@ -50,4 +50,16 @@ const listCourses = asyncHandler(async (req, res) => {
   });
 });
 
-module.exports = { listCourses };
+// GET /api/courses/:slug  -> { course, content }  (content = text written in the admin panel, or null)
+const getCourse = asyncHandler(async (req, res) => {
+  if (getDbState() !== 'connected') throw new ApiError(503, 'Database unavailable');
+
+  const slug = str(req.params.slug)?.toLowerCase();
+  const found = slug && /^[a-z0-9-]{1,100}$/.test(slug) ? await getCourseWithContent(slug) : null;
+  if (!found) throw new ApiError(404, 'Course not found');
+
+  res.set('Cache-Control', 'public, max-age=60');
+  res.json({ success: true, data: found });
+});
+
+module.exports = { listCourses, getCourse };

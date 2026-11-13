@@ -77,6 +77,13 @@ const env = {
     from: process.env.MAIL_FROM || process.env.SMTP_USER || '',
   },
 
+  // Files uploaded from the admin panel (course images, preview videos, syllabus PDFs) are stored here
+  // and served at /uploads. NOTE: on hosts with a temporary disk (e.g. Render free) point this to a
+  // persistent disk, otherwise files are lost on every redeploy.
+  uploadDir: path.resolve(process.cwd(), process.env.UPLOAD_DIR || 'uploads'),
+  // Public address of this API, used to build links to uploaded files. Leave empty to detect it from the request.
+  publicApiUrl: (process.env.PUBLIC_API_URL || '').replace(/\/+$/, ''),
+
   jwtSecret,
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '1d',
   jwtRememberExpiresIn:

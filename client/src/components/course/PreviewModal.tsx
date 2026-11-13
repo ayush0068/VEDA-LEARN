@@ -6,11 +6,15 @@ interface PreviewModalProps {
   open: boolean;
   courseSlug: string;
   title: string;
+  /** uploaded file or link from the admin panel (mp4 / webm / YouTube). Empty = public/videos/previews/<slug>.mp4 */
+  videoUrl?: string;
   onClose: () => void;
 }
 
-/** Plays public/videos/previews/<course-slug>.mp4 (shows a friendly message until the file exists). */
-export default function PreviewModal({ open, courseSlug, title, onClose }: PreviewModalProps) {
+const youtubeId = (url: string): string | undefined => /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{11})/.exec(url)?.[1];
+
+/** Plays the course preview video set in the admin panel (or public/videos/previews/<course-slug>.mp4). */
+export default function PreviewModal({ open, courseSlug, title, videoUrl, onClose }: PreviewModalProps) {
   const closeRef = useRef<HTMLButtonElement>(null);
   const [failed, setFailed] = useState(false);
 
@@ -29,6 +33,9 @@ export default function PreviewModal({ open, courseSlug, title, onClose }: Previ
   }, [open, onClose]);
 
   if (!open) return null;
+
+  const src = videoUrl || previewVideo(courseSlug);
+  const youtube = videoUrl ? youtubeId(videoUrl) : undefined;
 
   return (
     <div
@@ -50,9 +57,17 @@ export default function PreviewModal({ open, courseSlug, title, onClose }: Previ
         </button>
 
         <div className="aspect-video w-full bg-cream">
-          {!failed ? (
+          {youtube ? (
+            <iframe
+              src={`https://www.youtube-nocookie.com/embed/${youtube}?autoplay=1&rel=0`}
+              title={`${title} preview`}
+              className="h-full w-full"
+              allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+              allowFullScreen
+            />
+          ) : !failed ? (
             <video
-              src={previewVideo(courseSlug)}
+              src={src}
               className="h-full w-full bg-black object-contain"
               controls
               autoPlay
@@ -64,9 +79,7 @@ export default function PreviewModal({ open, courseSlug, title, onClose }: Previ
           ) : (
             <div className="flex h-full flex-col items-center justify-center gap-2 p-6 text-center">
               <p className="font-display text-2xl text-veda-brown">Preview coming soon</p>
-              <p className="max-w-sm text-sm text-veda-muted">
-                Add the video as <code className="rounded bg-gold-pale px-1">client/public{previewVideo(courseSlug)}</code>.
-              </p>
+              <p className="max-w-sm text-sm text-veda-muted">The preview video for this course will be available soon.</p>
             </div>
           )}
         </div>

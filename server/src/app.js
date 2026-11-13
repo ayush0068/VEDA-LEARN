@@ -20,6 +20,18 @@ app.use(
     credentials: true,
   }),
 );
+// Uploaded course files (images / videos / PDFs). Served with Range support (video seeking) and allowed
+// to be embedded by the website + admin panel, which run on other origins (helmet blocks that by default).
+app.use(
+  '/uploads',
+  express.static(env.uploadDir, {
+    maxAge: '7d',
+    immutable: true,
+    index: false,
+    setHeaders: (res) => res.set('Cross-Origin-Resource-Policy', 'cross-origin'),
+  }),
+);
+
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true }));
 if (!env.isProduction) app.use(morgan('dev'));

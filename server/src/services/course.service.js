@@ -1,5 +1,6 @@
 const { COURSE_SEEDS } = require('../data/courses.seed');
 const Course = require('../models/Course');
+const CourseContent = require('../models/CourseContent');
 
 // Fields that older databases (homepage-only courses) don't have yet.
 const CATALOG_FIELDS = ['category', 'image', 'description', 'weeks', 'lessons', 'level', 'language', 'order'];
@@ -123,7 +124,7 @@ const getActiveCourses = async ({ sort = 'popular', page, limit = 50, ...filters
   const query = Course.find(buildCourseFilter(filters))
     .sort(SORTS[sort] || SORTS.popular)
     .select(
-      'slug title category image icon instructor description weeks lessons level language rating studentsCount price originalPrice badge order createdAt -_id',
+      'slug title category image icon instructor description weeks lessons level language rating studentsCount price originalPrice badge previewVideo syllabus order createdAt -_id',
     );
 
   if (!page) {
@@ -137,7 +138,18 @@ const getActiveCourses = async ({ sort = 'popular', page, limit = 50, ...filters
   return { items, total, page, pages: Math.max(1, Math.ceil(total / limit)) };
 };
 
+/** One active course + the content of its detail page (null when nothing was written in the admin panel). */
+const getCourseWithContent = async (slug) => {
+  const course = await Course.findOne({ slug, isActive: true })
+    .select('slug title category image icon instructor description weeks lessons level language rating studentsCount price originalPrice badge previewVideo syllabus -_id')
+    .lean();
+  if (!course) return null;
+  const content = await CourseContent.findOne({ slug }).select('-_id -slug -createdAt -updatedAt -__v').lean();
+  return { course, content };
+};
+
 module.exports = {
+  getCourseWithContent,
   seedCourses,
   seedCoursesIfEmpty,
   seedCoursesIfNeeded,
