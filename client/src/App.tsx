@@ -15,11 +15,13 @@ import Contact from '@/pages/Contact';
 import About from '@/pages/About';
 import CourseDetail from '@/pages/CourseDetail';
 import Courses from '@/pages/Courses';
+import DashboardLiveClasses from '@/pages/DashboardLiveClasses';
 import DashboardComingSoon from '@/pages/DashboardComingSoon';
 import DashboardMyCourses from '@/pages/DashboardMyCourses';
 import Home from '@/pages/Home';
 import LiveClassDetail from '@/pages/LiveClassDetail';
 import LiveClasses from '@/pages/LiveClasses';
+import LiveRoomStudent from '@/pages/LiveRoomStudent';
 import Login from '@/pages/Login';
 import PlaceholderPage from '@/pages/PlaceholderPage';
 import Profile from '@/pages/Profile';
@@ -34,10 +36,14 @@ export default function App() {
       <Route path="login" element={<Login />} />
       <Route path="register" element={<Register />} />
 
+      {/* the live class room fills the whole screen (video + audio over WebRTC), so it has no navbar */}
+      <Route path="live/:id" element={<RequireAuth><LiveRoomStudent /></RequireAuth>} />
+
       {/* Student area: signed-in students only, own layout (top bar + side menu), no website footer */}
       <Route path="dashboard" element={<RequireAuth><DashboardLayout /></RequireAuth>}>
         <Route index element={<StudentDashboard />} />
         <Route path="my-courses" element={<DashboardMyCourses />} />
+        <Route path="live-classes" element={<DashboardLiveClasses />} />
         <Route path=":section" element={<DashboardComingSoon />} />
       </Route>
 

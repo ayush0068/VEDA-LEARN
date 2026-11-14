@@ -84,6 +84,28 @@ const env = {
   // Public address of this API, used to build links to uploaded files. Leave empty to detect it from the request.
   publicApiUrl: (process.env.PUBLIC_API_URL || '').replace(/\/+$/, ''),
 
+  // ---- Live classes (WebRTC) ----
+  live: {
+    // hard ceiling for "Max students" of one class (browser-to-browser video, see services/liveClass.service.js)
+    maxStudentsLimit: Math.max(1, Number(process.env.LIVE_MAX_STUDENTS_LIMIT) || 100),
+    defaultMaxStudents: Math.max(1, Number(process.env.LIVE_DEFAULT_MAX_STUDENTS) || 30),
+    // STUN / TURN servers handed to the browsers. Add a TURN server for students behind strict firewalls / mobile networks:
+    //   TURN_URL=turn:turn.example.com:3478  TURN_USERNAME=...  TURN_CREDENTIAL=...      (or ICE_SERVERS='[{"urls":"..."}]')
+    iceServers: (() => {
+      if (process.env.ICE_SERVERS) {
+        try {
+          const parsed = JSON.parse(process.env.ICE_SERVERS);
+          if (Array.isArray(parsed) && parsed.length) return parsed;
+        } catch {
+          console.warn('[env] ICE_SERVERS is not valid JSON - using the default STUN servers.');
+        }
+      }
+      const list = [{ urls: ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302'] }];
+      if (process.env.TURN_URL) list.push({ urls: toList(process.env.TURN_URL, []), username: process.env.TURN_USERNAME || '', credential: process.env.TURN_CREDENTIAL || '' });
+      return list;
+    })(),
+  },
+
   jwtSecret,
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '1d',
   jwtRememberExpiresIn:

@@ -89,3 +89,9 @@
   .thin-scroll::-webkit-scrollbar { width: 6px; }
   .thin-scroll::-webkit-scrollbar-thumb { background: rgba(197, 139, 43, 0.35); border-radius: 999px; }
 }
+/* live classes: floating emoji reactions */
+@keyframes live-float {
+  0% { opacity: 0; transform: translateY(0) scale(0.6); }
+  12% { opacity: 1; transform: translateY(-20px) scale(1); }
+  100% { opacity: 0; transform: translateY(-260px) scale(1.15); }
+}

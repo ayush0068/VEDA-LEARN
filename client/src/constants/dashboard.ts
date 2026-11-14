@@ -22,7 +22,7 @@ export interface DashNavItem {
 export const DASH_SIDEBAR_ITEMS: DashNavItem[] = [
   { key: 'dashboard', label: 'Dashboard', to: '/dashboard', Icon: LayoutDashboard, end: true },
   { key: 'my-courses', label: 'My Courses', to: '/dashboard/my-courses', Icon: BookOpen },
-  { key: 'live', label: 'Live Classes', to: '/live-classes', Icon: PlayCircle },
+  { key: 'live', label: 'Live Classes', to: '/dashboard/live-classes', Icon: PlayCircle },
   { key: 'certificates', label: 'My Certificates', to: '/dashboard/certificates', Icon: Award },
   { key: 'bookmarks', label: 'Bookmarks', to: '/dashboard/bookmarks', Icon: Bookmark },
   { key: 'notes', label: 'Notes', to: '/dashboard/notes', Icon: StickyNote },
@@ -44,7 +44,7 @@ export const DASH_TOP_LINKS = [
 export const DASH_BOTTOM_ITEMS: DashNavItem[] = [
   { key: 'home', label: 'Home', to: '/', Icon: Home, end: true },
   { key: 'courses', label: 'Courses', to: '/courses', Icon: BookOpen },
-  { key: 'live', label: 'Live Classes', to: '/live-classes', Icon: PlayCircle },
+  { key: 'live', label: 'Live Classes', to: '/dashboard/live-classes', Icon: PlayCircle },
   { key: 'community', label: 'Community', to: '/community', Icon: UsersRound },
   { key: 'dashboard', label: 'Dashboard', to: '/dashboard', Icon: FileText, end: true },
 ];

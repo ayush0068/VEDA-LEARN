@@ -1,6 +1,8 @@
 const app = require('./app');
 const { connectDB, disconnectDB } = require('./config/db');
 const { env } = require('./config/env');
+const { initLiveSocket } = require('./live/socket');
+const { closeStaleLiveClasses } = require('./services/liveClass.service');
 const { seedAllIfEmpty } = require('./services/seed.service');
 
 let server;
@@ -23,6 +25,10 @@ const start = async () => {
     console.log(`[server] VedaLearn API running on http://localhost:${env.port} (${env.nodeEnv})`);
     console.log(`[server] Health check: http://localhost:${env.port}/api/health`);
   });
+
+  // live classes: WebRTC signalling runs on the same port (Socket.IO, /socket.io)
+  initLiveSocket(server);
+  if (dbConnected) closeStaleLiveClasses().catch((err) => console.warn('[live] cleanup skipped:', err.message));
 
   server.on('error', (err) => {
     if (err.code === 'EADDRINUSE') {
