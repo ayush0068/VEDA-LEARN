@@ -289,6 +289,58 @@ const getForStudent = async (user, id) => {
 };
 
 // ------------------------------------------------------------------------------------------------
+// public listing (the website's Live Classes page, no sign-in needed)
+// ------------------------------------------------------------------------------------------------
+const PUBLIC_RECORDING_DAYS = 90;
+
+const toPublic = (c, meta) => {
+  const m = meta.get(c.courseSlug) || {};
+  const room = getRoomInfo(c._id);
+  return {
+    ...toStudent(c, new Map([[c.courseSlug, m.title || '']])),
+    resources: [], // study material is only for people inside the class
+    courseCategory: m.category || '',
+    courseImage: m.image || '',
+    registered: c.status === 'live' ? room.students : c.peakStudents || 0,
+  };
+};
+
+const courseMetaMap = async (slugs) => {
+  const list = [...new Set(slugs.filter(Boolean))];
+  if (list.length === 0) return new Map();
+  const rows = await Course.find({ slug: { $in: list } }).select('slug title category image').lean();
+  return new Map(rows.map((r) => [r.slug, r]));
+};
+
+/** live now + upcoming + recent recordings, for everybody (cancelled / not-held classes are left out) */
+const listPublic = async () => {
+  const now = new Date();
+  const since = new Date(now.getTime() - PUBLIC_RECORDING_DAYS * 24 * 60 * MIN);
+  const rows = await LiveClass.find({
+    $or: [
+      { status: 'live' },
+      { status: 'scheduled', endsAt: { $gte: now } },
+      { status: 'ended', 'recording.url': { $exists: true, $ne: '' }, endedAt: { $gte: since } },
+    ],
+  })
+    .select('-messages -attendance -polls')
+    .populate('host', 'name role')
+    .sort({ startsAt: 1 })
+    .limit(300)
+    .lean();
+  const meta = await courseMetaMap(rows.map((c) => c.courseSlug));
+  return rows.map((c) => toPublic(c, meta));
+};
+
+const getPublic = async (id) => {
+  if (!/^[a-f0-9]{24}$/i.test(String(id))) throw new ApiError(404, 'Live class not found');
+  const c = await LiveClass.findById(id).select('-messages -attendance -polls').populate('host', 'name role').lean();
+  if (!c || c.status === 'cancelled') throw new ApiError(404, 'Live class not found');
+  const meta = await courseMetaMap([c.courseSlug]);
+  return toPublic(c, meta);
+};
+
+// ------------------------------------------------------------------------------------------------
 // signalling server helpers (live/socket.js)
 // ------------------------------------------------------------------------------------------------
 const isHost = (user, cls) => user.role === 'admin' || (user.role === 'instructor' && String(cls.host?._id || cls.host) === String(user._id));
@@ -362,6 +414,8 @@ module.exports = {
   removeRecording,
   listForStudent,
   getForStudent,
+  listPublic,
+  getPublic,
   authorizeJoin,
   markLive,
   markEnded,

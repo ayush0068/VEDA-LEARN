@@ -8,6 +8,7 @@ import { useNotificationState } from '@/hooks/useNotificationState';
 import { useNow } from '@/hooks/useNow';
 import { useStudentDashboard } from '@/hooks/useStudentDashboard';
 import { buildNotifications } from '@/utils/dashboardLogic';
+import { useLiveClassData } from '@/data/liveClassStore';
 import DashboardBottomNav from './DashboardBottomNav';
 import DashboardHeader from './DashboardHeader';
 import DashboardSidebar from './DashboardSidebar';
@@ -19,6 +20,7 @@ import type { DashboardContextValue } from './dashboardContext';
  * It loads the dashboard data once and hands it to the pages through <Outlet context>.
  */
 export default function DashboardLayout() {
+  useLiveClassData(); // re-render when the live classes (admin panel) load or change
   const { count } = useCart();
   const location = useLocation();
   const now = useNow();

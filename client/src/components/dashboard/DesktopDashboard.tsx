@@ -11,6 +11,7 @@ import {
 } from '@/constants/dashboard';
 import type { StudentDashboard } from '@/types/dashboard';
 import { buildCalendarEvents, nextLiveClass, pickContinue } from '@/utils/dashboardLogic';
+import { useLiveClassData } from '@/data/liveClassStore';
 import { LotusMark } from '@/components/common/Logo';
 import { ContinueLearningCard, EnrolledCourseCard, NoCoursesCard, RecommendedCard } from './DashboardCourseCards';
 import type { SavedApi } from './DashboardCourseCards';
@@ -64,6 +65,7 @@ function StatCard({ Icon, value, label, linkLabel, to }: { Icon: LucideIcon; val
 
 /** Desktop composition (screens ≥ 1024px): welcome row, stats, continue learning, courses, recommended + right column */
 export default function DesktopDashboard({ data, userName, ctx, saved }: Props) {
+  useLiveClassData(); // re-render when the live classes (admin panel) load or change
   const { now, liveState, notify } = ctx;
   const [showAll, setShowAll] = useState(false);
 

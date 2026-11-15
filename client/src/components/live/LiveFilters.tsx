@@ -2,7 +2,7 @@ import { CalendarDays, ChevronDown, Clock, Search, SlidersHorizontal, X } from '
 import type { ReactNode } from 'react';
 import { useRef, useState } from 'react';
 import { COURSE_TABS } from '@/constants/courseCatalog';
-import { LIVE_LEVEL_OPTIONS, LIVE_TEACHERS, LIVE_TIME_OPTIONS } from '@/constants/liveClasses';
+import { LIVE_LEVEL_OPTIONS, LIVE_TIME_OPTIONS } from '@/constants/liveClasses';
 import { formatShortDate } from '@/utils/liveClassFormat';
 
 export interface LiveFilterState {
@@ -24,7 +24,6 @@ interface Option {
 }
 
 const CATEGORY_OPTIONS: Option[] = COURSE_TABS.filter((t) => t.slug !== 'all').map((t) => ({ value: t.slug, label: t.label }));
-const TEACHER_OPTIONS: Option[] = LIVE_TEACHERS.map((t) => ({ value: t.id, label: t.name }));
 const LEVEL_OPTIONS: Option[] = LIVE_LEVEL_OPTIONS.map((l) => ({ value: l, label: l }));
 const TIME_OPTIONS: Option[] = LIVE_TIME_OPTIONS.map((t) => ({ value: t.value, label: t.label }));
 
@@ -115,9 +114,12 @@ interface LiveFiltersProps {
   filters: LiveFilterState;
   onChange: (patch: Partial<LiveFilterState>) => void;
   onClear: () => void;
+  /** teachers who have classes right now */
+  teachers: { id: string; name: string }[];
 }
 
-export default function LiveFilters({ filters, onChange, onClear }: LiveFiltersProps) {
+export default function LiveFilters({ filters, onChange, onClear, teachers }: LiveFiltersProps) {
+  const TEACHER_OPTIONS: Option[] = teachers.map((t) => ({ value: t.id, label: t.name }));
   const [moreOpen, setMoreOpen] = useState(false);
   const extraActive = Boolean(filters.level || filters.time);
 

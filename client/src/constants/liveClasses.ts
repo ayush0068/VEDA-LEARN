@@ -8,7 +8,7 @@
 
 export type LiveStatus = 'upcoming' | 'ongoing' | 'completed';
 export type LiveLevel = 'Beginner' | 'Intermediate' | 'Advanced' | 'All Levels';
-export type LivePlatform = 'Zoom' | 'YouTube';
+export type LivePlatform = 'Zoom' | 'YouTube' | 'VedaLearn';
 
 export interface LiveTeacher {
   id: string;
@@ -40,6 +40,10 @@ export interface LiveClass {
   tags: string[];
   about: string;
   learn: string[];
+  /** classes created in the admin panel: ISO time from which students may enter the room */
+  opensAt?: string;
+  /** true for classes that come from the server (admin panel) */
+  live?: boolean;
 }
 
 export const LIVE_BANNER_SRC = '/images/live-classes-banner.png';
@@ -407,5 +411,6 @@ export const LIVE_TIME_OPTIONS: TimeBucket[] = [
   { value: 'evening', label: 'Evening (after 5 PM)', from: 17, to: 24 },
 ];
 
-export const getLiveTeacher = (id: string): LiveTeacher => LIVE_TEACHERS.find((t) => t.id === id) ?? LIVE_TEACHERS[0];
-export const getLiveClass = (id: string | undefined): LiveClass | undefined => LIVE_CLASSES.find((c) => c.id === id);
+/** teachers of the classes that come from the admin panel (filled by data/liveClassStore.ts) */
+export const runtimeTeachers = new Map<string, LiveTeacher>();
+export const getLiveTeacher = (id: string): LiveTeacher => runtimeTeachers.get(id) ?? LIVE_TEACHERS.find((t) => t.id === id) ?? LIVE_TEACHERS[0];

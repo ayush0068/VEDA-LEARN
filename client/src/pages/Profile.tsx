@@ -14,12 +14,14 @@ import { useNow } from '@/hooks/useNow';
 import { useProfile } from '@/hooks/useProfile';
 import { useStudentDashboard } from '@/hooks/useStudentDashboard';
 import { buildNotifications } from '@/utils/dashboardLogic';
+import { useLiveClassData } from '@/data/liveClassStore';
 
 /**
  * /profile - signed-in students only. Same top bar as the dashboard, then the "My Profile" banner,
  * a section menu on the left and the chosen section (<Outlet>) on the right.
  */
 export default function Profile() {
+  useLiveClassData(); // re-render when the live classes (admin panel) load or change
   const { count } = useCart();
   const location = useLocation();
   const now = useNow();

@@ -12,8 +12,9 @@ import LiveHero from '@/components/live/LiveHero';
 import { FeaturedTeacher, RecordingsCta, WhyJoin } from '@/components/live/LiveSidebar';
 import LiveTabs from '@/components/live/LiveTabs';
 import type { LiveTab } from '@/components/live/LiveTabs';
-import { LIVE_CLASSES, LIVE_TEACHERS, LIVE_TIME_OPTIONS } from '@/constants/liveClasses';
+import { LIVE_TIME_OPTIONS, getLiveTeacher } from '@/constants/liveClasses';
 import type { LiveClass } from '@/constants/liveClasses';
+import { useLiveClassData } from '@/data/liveClassStore';
 import { useLiveClassState } from '@/hooks/useLiveClassState';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { classSortKey, monthKey, startHour } from '@/utils/liveClassFormat';
@@ -56,9 +57,8 @@ const statusMatches = (c: LiveClass, tab: LiveTab, enrolledIds: string[]) => {
   }
 };
 
-// month the calendar opens on: the first class that is not finished yet
-const FIRST_OPEN = LIVE_CLASSES.filter((c) => c.status !== 'completed').sort((a, b) => classSortKey(a).localeCompare(classSortKey(b)))[0];
-const INITIAL_MONTH = monthKey((FIRST_OPEN ?? LIVE_CLASSES[0]).date);
+// today in IST, as the month the calendar opens on until the classes are loaded
+const todayMonth = () => new Date(Date.now() + 330 * 60 * 1000).toISOString().slice(0, 7);
 
 export default function LiveClasses() {
   const isDesktop = useMediaQuery('(min-width: 1024px)');
@@ -67,7 +67,9 @@ export default function LiveClasses() {
   const tab: LiveTab = tabParam && TAB_IDS.includes(tabParam) ? tabParam : 'upcoming';
 
   const [filters, setFilters] = useState<LiveFilterState>(EMPTY_LIVE_FILTERS);
-  const [month, setMonth] = useState(INITIAL_MONTH);
+  const { classes: LIVE_CLASSES, teachers, loaded, error, reload } = useLiveClassData();
+  const [month, setMonth] = useState(todayMonth);
+  const monthPicked = useRef(false);
   const listRef = useRef<HTMLDivElement>(null);
 
   const { message, show } = useLiveToast();
@@ -88,6 +90,18 @@ export default function LiveClasses() {
 
   const scrollToList = () => window.setTimeout(() => listRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 30);
 
+  // once the classes arrive the calendar opens on the month of the first class that is not finished (unless the student already moved it)
+  useEffect(() => {
+    if (!loaded || monthPicked.current) return;
+    const first = LIVE_CLASSES.filter((c) => c.status !== 'completed').sort((a, b) => classSortKey(a).localeCompare(classSortKey(b)))[0];
+    if (first) setMonth(monthKey(first.date));
+  }, [loaded, LIVE_CLASSES]);
+
+  const changeMonth = (m: string) => {
+    monthPicked.current = true;
+    setMonth(m);
+  };
+
   // a date picked in the Date filter moves the calendar to that month
   useEffect(() => {
     if (filters.date) setMonth(monthKey(filters.date));
@@ -96,7 +110,7 @@ export default function LiveClasses() {
   const results = useMemo(() => {
     const q = filters.query.trim().toLowerCase();
     const bucket = LIVE_TIME_OPTIONS.find((t) => t.value === filters.time);
-    const teacherName = (id: string) => LIVE_TEACHERS.find((t) => t.id === id)?.name ?? '';
+    const teacherName = (id: string) => getLiveTeacher(id).name;
 
     const list = LIVE_CLASSES.filter((c) => {
       if (!statusMatches(c, tab, state.enrolledIds)) return false;
@@ -111,7 +125,7 @@ export default function LiveClasses() {
 
     const sorted = list.sort((a, b) => classSortKey(a).localeCompare(classSortKey(b)));
     return tab === 'recordings' ? sorted.reverse() : sorted;
-  }, [tab, filters, state.enrolledIds]);
+  }, [tab, filters, state.enrolledIds, LIVE_CLASSES]);
 
   const onCalendarSelect = (iso: string, onDay: LiveClass[]) => {
     if (filters.date === iso) {
@@ -149,14 +163,29 @@ export default function LiveClasses() {
             <LiveTabs active={tab} onChange={setTab} />
 
             <div className="mt-4">
-              <LiveFilters filters={filters} onChange={patchFilters} onClear={clearFilters} />
+              <LiveFilters filters={filters} onChange={patchFilters} onClear={clearFilters} teachers={teachers} />
             </div>
 
             <div ref={listRef} className="mt-6 scroll-mt-24 lg:mt-7">
               <h2 className="font-display text-[1.6rem] font-semibold leading-tight text-veda-bark lg:text-[1.9rem]">{heading.title}</h2>
               <p className="mt-1 text-sm text-veda-text">{heading.sub}</p>
 
-              {results.length === 0 ? (
+              {!loaded ? (
+                <ul className="mt-5 grid grid-cols-2 gap-4 xl:grid-cols-3" aria-busy="true" aria-label="Loading classes">
+                  {[0, 1, 2].map((i) => (
+                    <li key={i} className="h-72 animate-pulse rounded-xl bg-gold-pale/50" />
+                  ))}
+                </ul>
+              ) : error && LIVE_CLASSES.length === 0 ? (
+                <div className="mt-6 flex flex-col items-center rounded-2xl border border-gold/25 bg-cream/50 px-6 py-14 text-center">
+                  <CalendarX2 size={36} strokeWidth={1.3} className="text-saffron" aria-hidden />
+                  <h3 className="mt-3 font-display text-xl font-semibold text-veda-bark">Could not load live classes</h3>
+                  <p className="mt-1 max-w-sm text-sm text-veda-muted">{error}</p>
+                  <button type="button" onClick={() => void reload()} className="btn-primary mt-5 px-6 py-2.5">
+                    Try again
+                  </button>
+                </div>
+              ) : results.length === 0 ? (
                 <div className="mt-6 flex flex-col items-center rounded-2xl border border-gold/25 bg-cream/50 px-6 py-14 text-center">
                   {filtered ? <SearchX size={36} strokeWidth={1.3} className="text-saffron" aria-hidden /> : <CalendarX2 size={36} strokeWidth={1.3} className="text-saffron" aria-hidden />}
                   <h3 className="mt-3 font-display text-xl font-semibold text-veda-bark">No classes found</h3>
@@ -200,7 +229,7 @@ export default function LiveClasses() {
 
           {/* desktop sidebar */}
           <aside className="hidden space-y-5 lg:block" aria-label="Live class extras">
-            <LiveCalendar classes={LIVE_CLASSES} month={month} selected={filters.date} onMonthChange={setMonth} onSelect={onCalendarSelect} />
+            <LiveCalendar classes={LIVE_CLASSES} month={month} selected={filters.date} onMonthChange={changeMonth} onSelect={onCalendarSelect} />
             <WhyJoin />
             <FeaturedTeacher onViewProfile={viewTeacher} />
             <RecordingsCta onBrowse={browseRecordings} />

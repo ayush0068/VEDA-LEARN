@@ -60,6 +60,15 @@ export const useLiveClassState = (notify: (message: string) => void) => {
       const first = !enrolled.includes(c.id);
       if (first) enroll(c.id);
 
+      // classes taught inside VedaLearn (admin panel): enter the room once it is open
+      if (c.live) {
+        const open = c.status === 'ongoing' || (c.opensAt ? Date.now() >= new Date(c.opensAt).getTime() : false);
+        if (open) {
+          navigate(c.joinUrl);
+          return;
+        }
+      }
+
       if (c.status === 'ongoing') {
         window.open(c.joinUrl, '_blank', 'noopener,noreferrer');
         notify(`Opening ${c.platform}…`);

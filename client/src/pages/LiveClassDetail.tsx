@@ -1,9 +1,11 @@
 import { ArrowLeft, ArrowRight, Bookmark, CalendarDays, CalendarPlus, Check, CircleCheck, Clock, Play, Share2, Star, UsersRound, Video, BadgeCheck, PlayCircle } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { DateBadge, liveActionLabel, registeredCount } from '@/components/live/LiveClassCard';
 import { LiveThumb, LiveToast, TeacherAvatar, useLiveToast } from '@/components/live/LiveCommon';
-import { LIVE_CLASSES, getLiveClass, getLiveTeacher } from '@/constants/liveClasses';
+import { getLiveTeacher } from '@/constants/liveClasses';
 import type { LiveClass } from '@/constants/liveClasses';
+import { loadLiveClass, useLiveClassData } from '@/data/liveClassStore';
 import { useLiveClassState } from '@/hooks/useLiveClassState';
 import { downloadIcs, formatClassDate, formatRegistered, formatTimeRange } from '@/utils/liveClassFormat';
 
@@ -30,15 +32,38 @@ function NotFound() {
 
 export default function LiveClassDetail() {
   const { id } = useParams();
-  const item = getLiveClass(id);
+  const { classes, loaded } = useLiveClassData();
+  const listed = classes.find((c) => c.id === id);
+  // a class that is not in the list (old link, finished without a recording...) is fetched on its own
+  const [fetched, setFetched] = useState<{ id: string; item: LiveClass | null } | null>(null);
   const { message, show } = useLiveToast();
   const state = useLiveClassState(show);
 
-  if (!item) return <NotFound />;
-  return <Detail item={item} state={state} message={message} notify={show} />;
+  useEffect(() => {
+    if (!id || !loaded || listed || fetched?.id === id) return;
+    let alive = true;
+    loadLiveClass(id)
+      .then((item) => alive && setFetched({ id, item }))
+      .catch(() => alive && setFetched({ id, item: null }));
+    return () => {
+      alive = false;
+    };
+  }, [id, loaded, listed, fetched]);
+
+  const item = listed ?? (fetched && fetched.id === id ? fetched.item : null);
+  if (!item) {
+    return !loaded || (id && fetched?.id !== id) ? (
+      <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6" aria-busy="true">
+        <div className="aspect-[16/7] animate-pulse rounded-2xl bg-gold-pale/50" />
+      </section>
+    ) : (
+      <NotFound />
+    );
+  }
+  return <Detail item={item} classes={classes} state={state} message={message} notify={show} />;
 }
 
-function Detail({ item, state, message, notify }: { item: LiveClass; state: ReturnType<typeof useLiveClassState>; message: string | null; notify: (m: string) => void }) {
+function Detail({ item, classes, state, message, notify }: { item: LiveClass; classes: LiveClass[]; state: ReturnType<typeof useLiveClassState>; message: string | null; notify: (m: string) => void }) {
   const teacher = getLiveTeacher(item.teacherId);
   const enrolled = state.isEnrolled(item.id);
   const saved = state.isSaved(item.id);
@@ -46,7 +71,7 @@ function Detail({ item, state, message, notify }: { item: LiveClass; state: Retu
   const isLive = item.status === 'ongoing';
   const isDone = item.status === 'completed';
 
-  const related = [...LIVE_CLASSES.filter((c) => c.id !== item.id && c.status === 'upcoming')]
+  const related = [...classes.filter((c) => c.id !== item.id && c.status === 'upcoming')]
     .sort((a, b) => Number(b.category === item.category) - Number(a.category === item.category))
     .slice(0, 4);
 
@@ -209,6 +234,7 @@ function Detail({ item, state, message, notify }: { item: LiveClass; state: Retu
               <p className="mt-2 text-[0.95rem] leading-relaxed text-veda-text">{item.about}</p>
             </section>
 
+            {item.learn.length > 0 && (
             <section className="mt-6 rounded-2xl border border-gold/20 bg-cream/60 p-4 sm:p-5" aria-labelledby="learn-heading">
               <h2 id="learn-heading" className="font-display text-[1.3rem] font-semibold text-veda-bark">
                 What You'll Learn
@@ -222,6 +248,7 @@ function Detail({ item, state, message, notify }: { item: LiveClass; state: Retu
                 ))}
               </ul>
             </section>
+            )}
 
             <section className="mt-7" aria-labelledby="teacher-heading">
               <h2 id="teacher-heading" className="font-display text-[1.45rem] font-semibold text-veda-bark">
@@ -236,10 +263,11 @@ function Detail({ item, state, message, notify }: { item: LiveClass; state: Retu
                       <BadgeCheck size={18} className="shrink-0 fill-gold text-ivory" aria-label="Verified teacher" />
                     </p>
                     <p className="mt-0.5 text-[0.88rem] text-veda-text">{teacher.role}</p>
-                    <p className="text-[0.88rem] text-veda-muted">{teacher.years}</p>
+                    {teacher.years && <p className="text-[0.88rem] text-veda-muted">{teacher.years}</p>}
                   </div>
                 </div>
-                <p className="mt-3 text-[0.9rem] leading-relaxed text-veda-muted">{teacher.bio}</p>
+                {teacher.bio && <p className="mt-3 text-[0.9rem] leading-relaxed text-veda-muted">{teacher.bio}</p>}
+                {teacher.students && (
                 <dl className="mt-4 grid grid-cols-3 gap-2 border-t border-gold/20 pt-4 text-center">
                   <div>
                     <UsersRound size={20} className="mx-auto text-saffron" aria-hidden />
@@ -260,6 +288,7 @@ function Detail({ item, state, message, notify }: { item: LiveClass; state: Retu
                     <p className="text-[0.76rem] text-veda-muted" aria-hidden>Rating</p>
                   </div>
                 </dl>
+                )}
               </div>
             </section>
           </div>

@@ -6,6 +6,7 @@ import Avatar from '@/components/course/Avatar';
 import { LotusMark } from '@/components/common/Logo';
 import { DASH_AVATAR_SRC, DASH_HEADER_ART_SRC, DASH_QUOTE_BANNER_SRC, DASH_QUOTE_SANSKRIT } from '@/constants/dashboard';
 import type { StudentDashboard } from '@/types/dashboard';
+import { useLiveClassData } from '@/data/liveClassStore';
 import { buildSchedule, nextLiveClass, pickContinue } from '@/utils/dashboardLogic';
 import type { ScheduleItem } from '@/utils/dashboardLogic';
 import { ContinueLearningCard, NoCoursesCard } from './DashboardCourseCards';
@@ -220,6 +221,7 @@ function QuoteBanner() {
 
 /** Phone / tablet composition (screens < 1024px) */
 export default function MobileDashboard({ data, userName, ctx, saved }: Props) {
+  useLiveClassData(); // re-render when the live classes (admin panel) load or change
   const { now, liveState, notify } = ctx;
   const continueCourse = useMemo(() => pickContinue(data.enrollments), [data.enrollments]);
   const next = useMemo(() => nextLiveClass(now), [now]);

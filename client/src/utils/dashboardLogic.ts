@@ -1,4 +1,5 @@
-import { LIVE_CLASSES, LIVE_TEACHERS, getLiveTeacher } from '@/constants/liveClasses';
+import { LIVE_TEACHERS, getLiveTeacher } from '@/constants/liveClasses';
+import { liveClassSnapshot } from '@/data/liveClassStore';
 import type { LiveClass, LiveStatus } from '@/constants/liveClasses';
 import type { DashboardActivity, DashboardAssignment, DashboardEnrollment } from '@/types/dashboard';
 import { classSortKey, formatClock, formatShortDate } from './liveClassFormat';
@@ -36,12 +37,12 @@ export const statusAt = (c: LiveClass, now: number): LiveStatus => {
 export const withLiveStatus = (c: LiveClass, now: number): LiveClass => ({ ...c, status: statusAt(c, now) });
 
 /** The class the student should see next: the one running now, otherwise the earliest still to start. */
-export const nextLiveClass = (now: number, classes: LiveClass[] = LIVE_CLASSES): LiveClass | null => {
+export const nextLiveClass = (now: number, classes: LiveClass[] = liveClassSnapshot()): LiveClass | null => {
   const open = classes.filter((c) => statusAt(c, now) !== 'completed').sort((a, b) => classSortKey(a).localeCompare(classSortKey(b)));
   return open[0] ? withLiveStatus(open[0], now) : null;
 };
 
-export const classesOn = (iso: string, now: number, classes: LiveClass[] = LIVE_CLASSES): LiveClass[] =>
+export const classesOn = (iso: string, now: number, classes: LiveClass[] = liveClassSnapshot()): LiveClass[] =>
   classes
     .filter((c) => c.date === iso)
     .sort((a, b) => classSortKey(a).localeCompare(classSortKey(b)))
@@ -151,7 +152,7 @@ export const buildCalendarEvents = (
   now: number,
   assignments: DashboardAssignment[],
   activity: DashboardActivity[],
-  classes: LiveClass[] = LIVE_CLASSES,
+  classes: LiveClass[] = liveClassSnapshot(),
 ): Map<string, CalendarEvent[]> => {
   const map = new Map<string, CalendarEvent[]>();
   const add = (iso: string, e: CalendarEvent) => map.set(iso, [...(map.get(iso) ?? []), e]);
