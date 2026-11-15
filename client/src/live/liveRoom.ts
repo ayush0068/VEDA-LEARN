@@ -182,6 +182,15 @@ export interface LiveRoomOptions {
 }
 
 /** bitrate (kbit/s) and downscale for the host's picture, by how many students are connected */
+/** screen share: sharper than a camera, but fewer pixels so the frame rate stays high (smooth scrolling / slide changes) */
+const screenQualityFor = (students: number): { kbps: number; scale: number } => {
+  if (students <= 5) return { kbps: 2200, scale: 1 };
+  if (students <= 15) return { kbps: 1400, scale: 1.5 };
+  if (students <= 30) return { kbps: 900, scale: 2 };
+  if (students <= 60) return { kbps: 550, scale: 2.5 };
+  return { kbps: 350, scale: 3 };
+};
+
 const qualityFor = (students: number): { kbps: number; scale: number } => {
   if (students <= 5) return { kbps: 1500, scale: 1 };
   if (students <= 15) return { kbps: 900, scale: 1 };
@@ -403,10 +412,11 @@ export class LiveRoomClient {
 
   async shareScreen(): Promise<void> {
     if (this.screenStream) return;
-    const stream = await navigator.mediaDevices.getDisplayMedia({ video: { frameRate: { ideal: 15, max: 20 } }, audio: true });
+    // 1280x720 at 15 fps: text stays readable and the browser can keep up in real time (full HD would lag on most connections)
+    const stream = await navigator.mediaDevices.getDisplayMedia({ video: { width: { max: 1920 }, height: { max: 1080 }, frameRate: { ideal: 15, max: 20 } }, audio: true });
     this.screenStream = stream;
     const v = stream.getVideoTracks()[0];
-    v.contentHint = 'detail'; // text stays sharp: the browser lowers the frame rate before the resolution
+    v.contentHint = 'text'; // sharp text, but never at the cost of a frozen picture (see degradationPreference below)
     v.addEventListener('ended', () => this.stopScreen());
     this.mixer?.setScreenAudio(stream.getAudioTracks()[0] ?? null);
     this.pushHostVideo();
@@ -488,14 +498,15 @@ export class LiveRoomClient {
   private applyQuality() {
     window.clearTimeout(this.qualityTimer);
     this.qualityTimer = window.setTimeout(() => {
-      const { kbps, scale } = qualityFor(this.peers.size);
       const sharing = Boolean(this.screenStream);
+      const { kbps, scale } = sharing ? screenQualityFor(this.peers.size) : qualityFor(this.peers.size);
       this.peers.forEach((p) => {
-        const params = p.video.getParameters();
+        const params = p.video.getParameters() as RTCRtpSendParameters & { degradationPreference?: string };
         if (!params.encodings?.length) params.encodings = [{}];
-        params.encodings[0].maxBitrate = (sharing ? kbps * 1.3 : kbps) * 1000;
-        params.encodings[0].scaleResolutionDownBy = sharing ? Math.max(1, scale / 1.5) : scale;
+        params.encodings[0].maxBitrate = kbps * 1000;
+        params.encodings[0].scaleResolutionDownBy = scale;
         params.encodings[0].maxFramerate = sharing ? 15 : 30;
+        params.degradationPreference = 'maintain-framerate'; // when the network is slow lower the sharpness, not the speed
         void p.video.setParameters(params).catch(() => {});
         const a = p.audio.getParameters();
         if (a.encodings?.length) {
