@@ -2,6 +2,7 @@ const { Router } = require('express');
 const { protect, restrictTo } = require('../../middleware/auth');
 const { createRateLimiter } = require('../../middleware/rateLimit');
 const courseRoutes = require('./courses.routes');
+const curriculumRoutes = require('./curriculum.routes');
 const liveRoutes = require('./live.routes');
 const instructorRoutes = require('./instructors.routes');
 const studentRoutes = require('./students.routes');
@@ -16,6 +17,7 @@ router.use(limiter, protect, restrictTo('admin'));
 router.use('/students', studentRoutes);
 router.use('/instructors', instructorRoutes);
 router.use('/courses', courseRoutes);
+router.use('/curriculum', curriculumRoutes);
 router.use('/live-classes', liveRoutes);
 
 module.exports = router;

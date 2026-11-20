@@ -1,4 +1,5 @@
-import { Clock, Eye, EyeOff, ExternalLink, FileText, Pencil, Star, Trash2, User } from 'lucide-react';
+import { Clock, Eye, EyeOff, ExternalLink, FileText, Layers, Pencil, Star, Trash2, User } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { env } from '@/config/env';
 import RowMenu from '@/components/students/RowMenu';
 import type { MenuItem } from '@/components/students/RowMenu';
@@ -13,10 +14,12 @@ export interface CourseActions {
 }
 
 export default function CourseCard({ course: c, categoryLabel, actions }: { course: AdminCourse; categoryLabel: string; actions: CourseActions }) {
+  const navigate = useNavigate();
   const off = c.originalPrice && c.originalPrice > c.price ? Math.round((1 - c.price / c.originalPrice) * 100) : 0;
 
   const items: MenuItem[] = [
     { label: 'Edit course', icon: Pencil, onClick: () => actions.onEdit(c) },
+    { label: 'Manage curriculum', icon: Layers, onClick: () => navigate(`/modules-lessons/${encodeURIComponent(c.slug)}`) },
     { label: 'View on website', icon: ExternalLink, onClick: () => window.open(`${env.siteUrl}/courses/${c.slug}`, '_blank', 'noopener') },
     c.isActive ? { label: 'Hide from website', icon: EyeOff, onClick: () => actions.onToggle(c) } : { label: 'Show on website', icon: Eye, onClick: () => actions.onToggle(c) },
     { label: 'Delete', icon: Trash2, onClick: () => actions.onDelete(c), danger: true },

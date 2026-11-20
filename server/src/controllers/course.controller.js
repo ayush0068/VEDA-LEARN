@@ -1,5 +1,6 @@
 const { getDbState } = require('../config/db');
 const { getActiveCourses, getCourseWithContent } = require('../services/course.service');
+const { getPublicOutline, getPublicPreviewLesson } = require('../services/learning.service');
 const ApiError = require('../utils/ApiError');
 const asyncHandler = require('../utils/asyncHandler');
 
@@ -62,4 +63,24 @@ const getCourse = asyncHandler(async (req, res) => {
   res.json({ success: true, data: found });
 });
 
-module.exports = { listCourses, getCourse };
+const slugOf = (req) => {
+  const slug = str(req.params.slug)?.toLowerCase();
+  if (!slug || !/^[a-z0-9-]{1,100}$/.test(slug)) throw new ApiError(404, 'Course not found');
+  return slug;
+};
+
+// GET /api/courses/:slug/outline  -> modules + lessons (titles only) with the free-preview lessons marked. No login needed.
+const getOutline = asyncHandler(async (req, res) => {
+  if (getDbState() !== 'connected') throw new ApiError(503, 'Database unavailable');
+  res.set('Cache-Control', 'no-store');
+  res.json({ success: true, data: await getPublicOutline(slugOf(req)) });
+});
+
+// GET /api/courses/:slug/preview/:lessonId  -> one FREE PREVIEW lesson with its video / text / PDF. No login needed.
+const getPreviewLesson = asyncHandler(async (req, res) => {
+  if (getDbState() !== 'connected') throw new ApiError(503, 'Database unavailable');
+  res.set('Cache-Control', 'no-store');
+  res.json({ success: true, data: await getPublicPreviewLesson(slugOf(req), req.params.lessonId) });
+});
+
+module.exports = { listCourses, getCourse, getOutline, getPreviewLesson };

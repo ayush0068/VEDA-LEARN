@@ -1,7 +1,10 @@
-import { ChevronDown, FileDown, Loader2 } from 'lucide-react';
-import { useState } from 'react';
+import { ChevronDown, FileDown, FileText, Loader2, NotebookText, PlayCircle } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
 import type { CurriculumModule } from '@/constants/courseDetails';
+import { getPublicOutline } from '@/services/learning.service';
+import type { PublicOutlineModule } from '@/services/learning.service';
 import { fileExists, syllabusFile } from '@/utils/courseFormat';
+import PreviewLessonModal from './PreviewLessonModal';
 
 const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? '' : 's'}`;
 
@@ -21,6 +24,23 @@ export default function Curriculum({ courseSlug, syllabusUrl, modules, lessons, 
   const [open, setOpen] = useState<Set<number>>(() => new Set());
   const [checking, setChecking] = useState(false);
   const [syllabusNote, setSyllabusNote] = useState('');
+  // real lessons (from Modules & Lessons in the admin panel); free-preview ones can be played by anyone
+  const [outline, setOutline] = useState<PublicOutlineModule[]>([]);
+  const [previewId, setPreviewId] = useState<string | null>(null);
+  const closePreview = useCallback(() => setPreviewId(null), []);
+
+  useEffect(() => {
+    let alive = true;
+    getPublicOutline(courseSlug)
+      .then((m) => alive && setOutline(m))
+      .catch(() => alive && setOutline([]));
+    return () => {
+      alive = false;
+    };
+  }, [courseSlug]);
+
+  /** the real lessons of module i (matched by position and name, so old hand-written curriculum keeps working) */
+  const lessonList = (i: number, m: CurriculumModule) => (outline[i] && outline[i].title === m.title ? outline[i].lessons : []);
 
   const allOpen = open.size === modules.length;
   const toggle = (i: number) =>
@@ -104,7 +124,25 @@ export default function Curriculum({ courseSlug, syllabusUrl, modules, lessons, 
               </h3>
 
               <div id={panelId} role="region" aria-labelledby={undefined} hidden={!isOpen} className="bg-cream/60 px-4 pb-4 pl-14 sm:pl-[3.75rem]">
-                {m.topics && m.topics.length > 0 ? (
+                {lessonList(i, m).length > 0 ? (
+                  <ul className="space-y-1 pt-1">
+                    {lessonList(i, m).map((l) => {
+                      const Icon = l.type === 'video' ? PlayCircle : l.type === 'document' ? FileText : NotebookText;
+                      return (
+                        <li key={l.id} className="flex items-center gap-2.5 text-[0.86rem] text-veda-text">
+                          <Icon size={15} className="shrink-0 text-gold" aria-hidden />
+                          <span className="min-w-0 flex-1 truncate">{l.title}</span>
+                          {l.durationMin > 0 && <span className="shrink-0 text-[0.74rem] text-veda-muted">{l.durationMin} min</span>}
+                          {l.isPreview && (
+                            <button type="button" onClick={() => setPreviewId(l.id)} className="shrink-0 rounded-full bg-gold-pale px-2.5 py-0.5 text-[0.74rem] font-semibold text-saffron hover:bg-gold-soft/60">
+                              Free preview
+                            </button>
+                          )}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                ) : m.topics && m.topics.length > 0 ? (
                   <ul className="list-disc space-y-1.5 pl-4 pt-1 text-[0.86rem] text-veda-text marker:text-gold">
                     {m.topics.map((t) => (
                       <li key={t}>{t}</li>
@@ -141,6 +179,7 @@ export default function Curriculum({ courseSlug, syllabusUrl, modules, lessons, 
           Download
         </button>
       </div>
+      <PreviewLessonModal slug={courseSlug} lessonId={previewId} onClose={closePreview} />
     </div>
   );
 }

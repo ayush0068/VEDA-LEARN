@@ -19,6 +19,7 @@ import DashboardLiveClasses from '@/pages/DashboardLiveClasses';
 import DashboardComingSoon from '@/pages/DashboardComingSoon';
 import DashboardMyCourses from '@/pages/DashboardMyCourses';
 import Home from '@/pages/Home';
+import CoursePlayer from '@/pages/CoursePlayer';
 import LiveClassDetail from '@/pages/LiveClassDetail';
 import LiveClasses from '@/pages/LiveClasses';
 import LiveRoomStudent from '@/pages/LiveRoomStudent';
@@ -38,6 +39,10 @@ export default function App() {
 
       {/* the live class room fills the whole screen (video + audio over WebRTC), so it has no navbar */}
       <Route path="live/:id" element={<RequireAuth><LiveRoomStudent /></RequireAuth>} />
+
+      {/* the lesson player (video / article / PDF + progress) fills the whole screen */}
+      <Route path="learn/:slug" element={<RequireAuth><CoursePlayer /></RequireAuth>} />
+      <Route path="learn/:slug/:lessonId" element={<RequireAuth><CoursePlayer /></RequireAuth>} />
 
       {/* Student area: signed-in students only, own layout (top bar + side menu), no website footer */}
       <Route path="dashboard" element={<RequireAuth><DashboardLayout /></RequireAuth>}>

@@ -8,6 +8,7 @@ import Instructors from '@/pages/Instructors';
 import LiveClasses from '@/pages/LiveClasses';
 import LiveRoomHost from '@/pages/LiveRoomHost';
 import Login from '@/pages/Login';
+import ModulesLessons from '@/pages/ModulesLessons';
 import Students from '@/pages/Students';
 
 export default function App() {
@@ -41,6 +42,8 @@ export default function App() {
         {/* "Add Student" quick action on the dashboard opens the same page with the form already open */}
         <Route path="students/new" element={<Students startWithAdd />} />
         <Route path="live-classes" element={<LiveClasses />} />
+        <Route path="modules-lessons" element={<ModulesLessons />} />
+        <Route path="modules-lessons/:slug" element={<ModulesLessons />} />
         {/* every other sidebar item opens a placeholder until its screen is built */}
         <Route path="*" element={<ComingSoon />} />
       </Route>

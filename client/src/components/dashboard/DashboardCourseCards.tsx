@@ -10,6 +10,8 @@ export interface SavedApi {
 
 const lessonsText = (e: DashboardEnrollment) => `${e.completedLessons} of ${e.totalLessons} lessons${e.status === 'in-progress' ? ' completed' : ''}`;
 const courseUrl = (slug: string) => `/courses/${slug}`;
+/** enrolled courses open in the lesson player */
+const learnUrl = (slug: string) => `/learn/${slug}`;
 
 /** The primary button of a course: "Continue →" (filled) or "Start Learning →" (outline) */
 export function CourseAction({ e, className = '' }: { e: DashboardEnrollment; className?: string }) {
@@ -17,7 +19,7 @@ export function CourseAction({ e, className = '' }: { e: DashboardEnrollment; cl
   const label = e.status === 'completed' ? 'Review Course' : start ? 'Start Learning' : 'Continue';
   return (
     <Link
-      to={courseUrl(e.slug)}
+      to={learnUrl(e.slug)}
       className={`inline-flex h-10 items-center justify-center gap-2 rounded-lg text-[0.88rem] font-medium transition-colors ${
         start ? 'border border-gold/45 bg-white/60 text-veda-bark hover:bg-gold-pale/60' : 'bg-veda-brown text-ivory shadow-soft hover:bg-veda-bark'
       } ${className}`}
@@ -44,7 +46,7 @@ export function ContinueLearningCard({ e, saved, mobile = false }: { e: Dashboar
       ) : (
         <StatusPill status={e.status} className="absolute right-3 top-3" />
       )}
-      <Link to={courseUrl(e.slug)} aria-label={`Play ${e.title}`} className="absolute inset-0 flex items-center justify-center">
+      <Link to={learnUrl(e.slug)} aria-label={`Play ${e.title}`} className="absolute inset-0 flex items-center justify-center">
         <span className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-ivory/90 bg-veda-bark/45 text-ivory backdrop-blur-[1px] transition-transform hover:scale-105">
           <Play size={22} className="ml-0.5 fill-current" aria-hidden />
         </span>
@@ -71,7 +73,7 @@ export function ContinueLearningCard({ e, saved, mobile = false }: { e: Dashboar
           <p className="mt-1.5 text-[0.8rem] text-veda-muted">{lessonsText(e)}</p>
         </div>
         <Link
-          to={courseUrl(e.slug)}
+          to={learnUrl(e.slug)}
           className={`inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-veda-brown px-6 text-[0.95rem] font-medium text-ivory shadow-soft transition-colors hover:bg-veda-bark ${mobile ? 'mt-3 w-full' : ''}`}
         >
           {e.status === 'not-started' ? 'Start Learning' : 'Continue Learning'} <ArrowRight size={16} aria-hidden />
@@ -101,7 +103,7 @@ export function EnrolledCourseCard({ e, saved }: { e: DashboardEnrollment; saved
       </div>
       <div className="flex flex-1 flex-col px-1.5 pb-1 pt-3">
         <h3 className="font-display text-[1.05rem] font-bold leading-snug text-veda-bark">
-          <Link to={courseUrl(e.slug)} className="hover:text-saffron">
+          <Link to={learnUrl(e.slug)} className="hover:text-saffron">
             {e.title}
           </Link>
         </h3>
@@ -127,7 +129,7 @@ export function CourseRow({ e, saved }: { e: DashboardEnrollment; saved: SavedAp
       <div className="min-w-0 py-0.5 pr-0.5">
         <div className="flex items-start justify-between gap-1">
           <h3 className="font-display text-[1.02rem] font-bold leading-snug text-veda-bark">
-            <Link to={courseUrl(e.slug)}>{e.title}</Link>
+            <Link to={learnUrl(e.slug)}>{e.title}</Link>
           </h3>
           <BookmarkButton variant="plain" saved={saved.isSaved(e.slug)} onToggle={() => saved.toggleSaved(e.slug)} label={e.title} />
         </div>

@@ -167,4 +167,4 @@ const getDashboard = async (user) => {
   };
 };
 
-module.exports = { getDashboard, addEnrollment };
+module.exports = { getDashboard, addEnrollment, getOrCreateProgress };

@@ -242,7 +242,7 @@ export default function MobileDashboard({ data, userName, ctx, saved }: Props) {
             value={`${stats.overallPercent}%`}
             label="Overall Progress"
             link="Keep Learning"
-            to={continueCourse ? `/courses/${continueCourse.slug}` : '/courses'}
+            to={continueCourse ? `/learn/${continueCourse.slug}` : '/courses'}
           />
         </div>
 

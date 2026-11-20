@@ -1,6 +1,7 @@
 const { COURSE_BADGES, COURSE_CATEGORIES, COURSE_LANGUAGES, HIGHLIGHT_LABELS } = require('../config/courseOptions');
 const Course = require('../models/Course');
 const CourseContent = require('../models/CourseContent');
+const { removeCourseCurriculum } = require('./curriculum.service');
 const InstructorProfile = require('../models/InstructorProfile');
 const User = require('../models/User');
 const ApiError = require('../utils/ApiError');
@@ -235,6 +236,7 @@ const deleteCourse = async (slug) => {
     Course.deleteOne({ _id: course._id }),
     CourseContent.deleteOne({ slug: course.slug }),
     InstructorProfile.updateMany({ courses: course.slug }, { $pull: { courses: course.slug } }),
+    removeCourseCurriculum(course.slug), // its modules and lessons go with it
   ]);
   await Promise.all(MEDIA_FIELDS.map((key) => removeUploadedFile(course[key])));
 };

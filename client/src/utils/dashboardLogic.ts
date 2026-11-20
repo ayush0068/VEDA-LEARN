@@ -98,7 +98,7 @@ export const buildSchedule = (now: number, enrollments: DashboardEnrollment[], a
       title: 'Watch Lesson',
       subtitle: learning.nextLesson || learning.currentModule,
       extra: learning.title,
-      to: `/courses/${learning.slug}`,
+      to: `/learn/${learning.slug}`,
     });
   }
 
