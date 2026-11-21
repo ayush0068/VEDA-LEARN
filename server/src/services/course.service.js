@@ -124,7 +124,7 @@ const getActiveCourses = async ({ sort = 'popular', page, limit = 50, ...filters
   const query = Course.find(buildCourseFilter(filters))
     .sort(SORTS[sort] || SORTS.popular)
     .select(
-      'slug title category image icon instructor description weeks lessons level language rating studentsCount price originalPrice badge previewVideo syllabus order createdAt -_id',
+      'slug title category image icon instructor description weeks lessons level language rating studentsCount price originalPrice isFree badge previewVideo syllabus order createdAt -_id',
     );
 
   if (!page) {
@@ -141,7 +141,7 @@ const getActiveCourses = async ({ sort = 'popular', page, limit = 50, ...filters
 /** One active course + the content of its detail page (null when nothing was written in the admin panel). */
 const getCourseWithContent = async (slug) => {
   const course = await Course.findOne({ slug, isActive: true })
-    .select('slug title category image icon instructor description weeks lessons level language rating studentsCount price originalPrice badge previewVideo syllabus -_id')
+    .select('slug title category image icon instructor description weeks lessons level language rating studentsCount price originalPrice isFree badge previewVideo syllabus -_id')
     .lean();
   if (!course) return null;
   const content = await CourseContent.findOne({ slug }).select('-_id -slug -createdAt -updatedAt -__v').lean();

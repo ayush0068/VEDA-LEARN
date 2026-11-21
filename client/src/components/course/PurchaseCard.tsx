@@ -1,7 +1,7 @@
 import { ArrowRight, CircleCheck, ShoppingCart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import type { Course } from '@/types';
-import { discountPercent, formatPrice } from '@/utils/format';
+import { coursePrice, discountPercent, formatPrice, isFreeCourse } from '@/utils/format';
 
 export const BENEFITS = [
   'Lifetime access to recorded videos',
@@ -21,7 +21,9 @@ interface PurchaseCardProps {
 
 /** Price + Enroll Now / Add to Cart + what you get. */
 export default function PurchaseCard({ course, inCart, onEnroll, onAddToCart }: PurchaseCardProps) {
-  const off = discountPercent(course.price, course.originalPrice);
+  const free = isFreeCourse(course);
+  const off = free ? 0 : discountPercent(course.price, course.originalPrice);
+  const benefits = free ? BENEFITS.filter((b) => !b.includes('money back')) : BENEFITS;
 
   return (
     <section
@@ -29,7 +31,7 @@ export default function PurchaseCard({ course, inCart, onEnroll, onAddToCart }: 
       className="rounded-2xl border border-gold/25 bg-ivory p-5 shadow-[0_24px_50px_-28px_rgba(90,45,15,0.5)] sm:p-6"
     >
       <p className="flex flex-wrap items-center gap-x-3 gap-y-1">
-        <span className="font-display text-[2rem] font-bold leading-none text-veda-bark">{formatPrice(course.price)}</span>
+        <span className="font-display text-[2rem] font-bold leading-none text-veda-bark">{coursePrice(course)}</span>
         {off > 0 && course.originalPrice && (
           <span className="text-[1rem] text-veda-muted line-through">{formatPrice(course.originalPrice)}</span>
         )}
@@ -44,10 +46,12 @@ export default function PurchaseCard({ course, inCart, onEnroll, onAddToCart }: 
           onClick={onEnroll}
           className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-b from-[#7a4015] to-veda-brown text-[1rem] font-semibold text-ivory shadow-[0_10px_22px_-10px_rgba(62,31,11,0.7)] transition hover:from-veda-brown hover:to-veda-bark"
         >
-          Enroll Now <ArrowRight size={17} aria-hidden />
+          {free ? 'Start Learning — Free' : 'Enroll Now'} <ArrowRight size={17} aria-hidden />
         </button>
 
-        {inCart ? (
+        {free ? (
+          <p className="text-center text-[0.82rem] text-veda-muted">Free for everyone. Just log in and start learning.</p>
+        ) : inCart ? (
           <Link
             to="/cart"
             className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-emerald-700/40 bg-emerald-50/70 text-[0.98rem] font-medium text-emerald-800 transition-colors hover:bg-emerald-100"
@@ -66,7 +70,7 @@ export default function PurchaseCard({ course, inCart, onEnroll, onAddToCart }: 
       </div>
 
       <ul className="mt-5 grid gap-x-4 gap-y-2.5 sm:grid-cols-2 lg:grid-cols-1">
-        {BENEFITS.map((benefit) => (
+        {benefits.map((benefit) => (
           <li key={benefit} className="flex items-start gap-2.5 text-[0.86rem] text-veda-text">
             <CircleCheck size={17} className="mt-0.5 shrink-0 text-saffron" aria-hidden />
             {benefit}

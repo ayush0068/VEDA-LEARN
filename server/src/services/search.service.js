@@ -1,7 +1,7 @@
 const Course = require('../models/Course');
 
 const FIELDS =
-  'slug title category image icon instructor description weeks lessons level language rating studentsCount price originalPrice badge order createdAt -_id';
+  'slug title category image icon instructor description weeks lessons level language rating studentsCount price originalPrice isFree badge order createdAt -_id';
 
 // Topics people search for most. Only the ones that really match a course are shown,
 // ordered by how many students those matching courses have (so "trending" follows real data).

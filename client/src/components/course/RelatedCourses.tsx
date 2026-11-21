@@ -5,14 +5,14 @@ import Mandala from '@/components/common/Mandala';
 import { getIcon } from '@/constants/icons';
 import { useSavedCourses } from '@/hooks/useSavedCourses';
 import type { Course } from '@/types';
-import { discountPercent, formatCount, formatPrice } from '@/utils/format';
+import { coursePrice, discountPercent, formatCount, formatPrice, isFreeCourse } from '@/utils/format';
 
 function RelatedCard({ course }: { course: Course }) {
   const [failed, setFailed] = useState(false);
   const { isSaved, toggleSaved } = useSavedCourses();
   const saved = isSaved(course.slug);
   const Icon = getIcon(course.icon);
-  const off = discountPercent(course.price, course.originalPrice);
+  const off = isFreeCourse(course) ? 0 : discountPercent(course.price, course.originalPrice);
 
   return (
     <li className="group relative flex flex-col overflow-hidden rounded-xl border border-gold/20 bg-ivory shadow-sm transition duration-300 hover:-translate-y-1 hover:border-gold/50">
@@ -63,7 +63,7 @@ function RelatedCard({ course }: { course: Course }) {
           </span>
         </p>
         <p className="mt-auto flex flex-wrap items-baseline gap-x-2 pt-3">
-          <span className="text-[1.1rem] font-bold text-veda-bark">{formatPrice(course.price)}</span>
+          <span className="text-[1.1rem] font-bold text-veda-bark">{coursePrice(course)}</span>
           {off > 0 && course.originalPrice && <span className="text-[0.8rem] text-veda-muted line-through">{formatPrice(course.originalPrice)}</span>}
         </p>
       </div>

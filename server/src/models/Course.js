@@ -34,6 +34,8 @@ const courseSchema = new mongoose.Schema(
     // Prices in INR (whole rupees)
     price: { type: Number, required: true, min: 0 },
     originalPrice: { type: Number, min: 0 },
+    // true = free course: any signed-in student can learn it without paying (price is kept at 0)
+    isFree: { type: Boolean, default: false },
     // Small label on the card, e.g. "Bestseller"
     badge: { type: String, default: '', trim: true, maxlength: 24 },
     isPopular: { type: Boolean, default: false, index: true },

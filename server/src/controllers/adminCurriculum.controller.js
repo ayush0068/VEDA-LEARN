@@ -3,6 +3,7 @@ const Lesson = require('../models/Lesson');
 const service = require('../services/curriculum.service');
 const ApiError = require('../utils/ApiError');
 const asyncHandler = require('../utils/asyncHandler');
+const { normalizeMediaUrl } = require('../utils/media');
 
 const asString = (value) => (typeof value === 'string' ? value : '');
 const bodyOf = (req) => (req.body && typeof req.body === 'object' && !Array.isArray(req.body) ? req.body : {});
@@ -39,7 +40,7 @@ const link = (value, label) => {
   if (!s) return '';
   if (s.length > 500) throw new ApiError(400, `${label} is too long`);
   if (!/^(https?:\/\/\S+|\/[^\s]*)$/i.test(s)) throw new ApiError(400, `${label} must be a full link starting with https:// (or an uploaded file)`);
-  return s;
+  return normalizeMediaUrl(s);
 };
 
 const status = (value) => {

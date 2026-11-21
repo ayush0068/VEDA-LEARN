@@ -50,6 +50,7 @@ const toCourse = (c) => ({
   studentsCount: c.studentsCount || 0,
   price: c.price,
   originalPrice: c.originalPrice ?? null,
+  isFree: c.isFree === true || c.price === 0,
   badge: c.badge || '',
   isPopular: Boolean(c.isPopular),
   isActive: c.isActive !== false,

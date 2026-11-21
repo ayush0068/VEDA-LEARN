@@ -1,9 +1,6 @@
 const crypto = require('crypto');
-const fs = require('fs');
-const path = require('path');
 const { Transform } = require('stream');
-const { pipeline } = require('stream/promises');
-const { COURSE_DIR, publicBase } = require('../utils/media');
+const { mediaPath, saveStream } = require('../utils/media');
 const ApiError = require('../utils/ApiError');
 const asyncHandler = require('../utils/asyncHandler');
 
@@ -16,9 +13,9 @@ const KINDS = {
   document: { max: 20 * MB, types: { 'application/pdf': 'pdf' }, label: 'PDF up to 20 MB' },
 };
 
-// POST /api/admin/uploads/:kind    (kind = image | video | document)
-// The file is sent as the raw request body with its mime type as Content-Type (no multipart needed).
-// Returns { url, size, type } - save `url` in the course.
+// POST /api/admin/courses/upload/:kind    (kind = image | video | document)
+// The file is sent as the raw request body with its mime type as Content-Type (no multipart needed) and is stored in
+// MongoDB (GridFS). Returns { url, size, type } - save `url` in the course (it is a full link on the API that answers).
 const upload = asyncHandler(async (req, res) => {
   const kind = KINDS[req.params.kind];
   if (!kind) throw new ApiError(404, 'Unknown upload type');
@@ -30,10 +27,6 @@ const upload = asyncHandler(async (req, res) => {
   const declared = Number(req.headers['content-length']);
   if (declared > kind.max) throw new ApiError(413, `File is too large. Please upload a ${kind.label}.`);
 
-  await fs.promises.mkdir(COURSE_DIR, { recursive: true });
-  const name = `${crypto.randomUUID()}.${ext}`;
-  const file = path.join(COURSE_DIR, name);
-
   let size = 0;
   const limiter = new Transform({
     transform(chunk, _enc, cb) {
@@ -42,17 +35,21 @@ const upload = asyncHandler(async (req, res) => {
       return cb(null, chunk);
     },
   });
+  req.on('error', (err) => limiter.destroy(err));
+  req.pipe(limiter);
 
-  try {
-    await pipeline(req, limiter, fs.createWriteStream(file));
-    if (size === 0) throw new ApiError(400, 'The file is empty');
-  } catch (err) {
-    await fs.promises.unlink(file).catch(() => {});
-    throw err;
+  const id = await saveStream(limiter, { filename: `${crypto.randomUUID()}.${ext}`, contentType: type, kind: req.params.kind }).catch((err) => {
+    if (err instanceof ApiError) throw err;
+    throw new ApiError(err.message === 'Database unavailable' ? 503 : 500, err.message === 'Database unavailable' ? 'Database unavailable' : 'Could not save the file. Please try again.');
+  });
+  if (size === 0) {
+    const { removeUploadedFile } = require('../utils/media');
+    await removeUploadedFile(mediaPath(id));
+    throw new ApiError(400, 'The file is empty');
   }
 
   res.set('Cache-Control', 'no-store');
-  res.status(201).json({ success: true, data: { url: `${publicBase(req)}/uploads/courses/${name}`, size, type } });
+  res.status(201).json({ success: true, data: { url: mediaPath(id), size, type } });
 });
 
 module.exports = { upload };

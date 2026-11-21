@@ -19,7 +19,7 @@ import { useCart } from '@/context/CartContext';
 import { useCourseDetail } from '@/hooks/useCourseDetail';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { useSavedCourses } from '@/hooks/useSavedCourses';
-import { formatCount } from '@/utils/format';
+import { formatCount, isFreeCourse } from '@/utils/format';
 
 const SECTIONS: TabSection[] = [
   { id: 'overview', label: 'Overview' },
@@ -132,6 +132,7 @@ function CourseDetailView({ slug }: { slug: string }) {
   const weeks = course.weeks ?? detail.curriculum.reduce((sum, m) => sum + m.weeks, 0);
 
   const enroll = () => {
+    if (isFreeCourse(course)) return navigate(`/learn/${course.slug}`);
     if (!inCart) add(course.slug);
     navigate('/cart');
   };

@@ -87,7 +87,7 @@ function Form({ target, options, onClose, onSaved }: Omit<Props, 'target'> & { t
     }
   };
 
-  const off = Number(discountOf(form.price, form.originalPrice));
+  const off = form.isFree ? 0 : Number(discountOf(form.price, form.originalPrice));
   const ready = !loading && !loadError;
 
   return (
@@ -242,20 +242,27 @@ function Form({ target, options, onClose, onSaved }: Omit<Props, 'target'> & { t
               <div className="space-y-5">
                 <section className="space-y-3">
                   <h3 className="font-display text-[1.05rem] font-bold text-veda-bark">Price & discount</h3>
-                  <div className="grid gap-3 sm:grid-cols-3">
+                  <div className="flex items-center justify-between gap-3 rounded-xl border border-line bg-white/60 px-3.5 py-3">
+                    <div>
+                      <p className="text-[0.88rem] font-semibold text-veda-bark">{form.isFree ? 'Free course' : 'Paid course'}</p>
+                      <p className="text-[0.76rem] text-veda-muted">{form.isFree ? 'Any signed-in student can start learning without paying.' : 'Students must buy it before they can open the lessons.'}</p>
+                    </div>
+                    <Switch checked={form.isFree} onChange={(v) => patch({ isFree: v, ...(v ? { price: '0', originalPrice: '', discount: '' } : { price: form.price === '0' ? '' : form.price }) })} label="Free course" />
+                  </div>
+                  <div className={`grid gap-3 sm:grid-cols-3 ${form.isFree ? 'pointer-events-none opacity-50' : ''}`} aria-disabled={form.isFree}>
                     <Field label="Original price (₹)" optional hint="Struck-through price.">
-                      <input inputMode="numeric" value={form.originalPrice} onChange={(e) => setOriginal(digits(e.target.value))} placeholder="2499" className={inputClass} />
+                      <input inputMode="numeric" disabled={form.isFree} value={form.originalPrice} onChange={(e) => setOriginal(digits(e.target.value))} placeholder="2499" className={inputClass} />
                     </Field>
                     <Field label="Discount (%)" hint="Fills the selling price.">
                       <input inputMode="numeric" value={form.discount} onChange={(e) => setDiscount(digits(e.target.value).slice(0, 3))} disabled={!form.originalPrice} placeholder="40" className={inputClass} />
                     </Field>
                     <Field label="Selling price (₹)" hint="What the student pays.">
-                      <input inputMode="numeric" value={form.price} onChange={(e) => setPrice(digits(e.target.value))} placeholder="1499" className={inputClass} />
+                      <input inputMode="numeric" disabled={form.isFree} value={form.price} onChange={(e) => setPrice(digits(e.target.value))} placeholder="1499" className={inputClass} />
                     </Field>
                   </div>
                   <p className="flex flex-wrap items-baseline gap-x-2.5 rounded-xl bg-cream/70 px-3.5 py-2.5 text-[0.85rem] text-veda-text">
                     <span className="text-veda-muted">Website shows:</span>
-                    <b className="text-[1.15rem] text-veda-bark">{form.price === '' ? '—' : Number(form.price) === 0 ? 'Free' : rupees(Number(form.price))}</b>
+                    <b className="text-[1.15rem] text-veda-bark">{form.isFree ? 'Free' : form.price === '' ? '—' : rupees(Number(form.price))}</b>
                     {off > 0 && form.originalPrice && <span className="text-veda-muted line-through">{rupees(Number(form.originalPrice))}</span>}
                     {off > 0 && <span className="rounded-md bg-gold-pale px-2 py-0.5 text-[0.72rem] font-semibold text-saffron">{off}% OFF</span>}
                   </p>

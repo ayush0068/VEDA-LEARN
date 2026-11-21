@@ -6,6 +6,7 @@ const { env } = require('./config/env');
 const { errorHandler, notFound } = require('./middleware/errorHandler');
 const apiRoutes = require('./routes');
 const ApiError = require('./utils/ApiError');
+const { mediaLinks } = require('./utils/media');
 
 const app = express();
 
@@ -20,7 +21,7 @@ app.use(
     credentials: true,
   }),
 );
-// Uploaded course files (images / videos / PDFs). Served with Range support (video seeking) and allowed
+// OLD uploads (stored on the server disk before files moved into MongoDB; see `npm run migrate-uploads`). Served with Range support (video seeking) and allowed
 // to be embedded by the website + admin panel, which run on other origins (helmet blocks that by default).
 app.use(
   '/uploads',
@@ -40,7 +41,8 @@ app.get('/', (_req, res) => {
   res.json({ success: true, message: 'VedaLearn API is running', health: '/api/health' });
 });
 
-app.use('/api', apiRoutes);
+// stored "/api/media/<id>" links are answered as full links of this API (works on localhost and on the live site)
+app.use('/api', mediaLinks, apiRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

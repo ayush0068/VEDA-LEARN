@@ -4,6 +4,7 @@ const Course = require('../models/Course');
 const service = require('../services/adminCourse.service');
 const ApiError = require('../utils/ApiError');
 const asyncHandler = require('../utils/asyncHandler');
+const { normalizeMediaUrl } = require('../utils/media');
 
 const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const LIST_STATUSES = ['active', 'hidden', 'popular'];
@@ -51,7 +52,7 @@ const url = (value, label) => {
   if (s.length > 500) throw new ApiError(400, `${label} link is too long`);
   const ok = /^https?:\/\/[^\s]+$/i.test(s) || /^\/(?!\/)[^\s]*$/.test(s);
   if (!ok) throw new ApiError(400, `${label} must be a full link (https://...) or a path like /images/courses/name.png`);
-  return s;
+  return normalizeMediaUrl(s);
 };
 
 const list = (value, label, { maxItems, maxLength }) => {
@@ -79,7 +80,14 @@ const cleanCourse = (body, { create }) => {
     if (!/^[a-z0-9-]{1,60}$/.test(category)) throw new ApiError(400, 'Please choose a category');
     f.category = category;
   }
-  if (create || has('price')) f.price = whole(body.price, 'Selling price');
+  // a free course has no price: any signed-in student can learn it without paying
+  const free = has('isFree') ? bool(body.isFree, 'Free course') : undefined;
+  if (free !== undefined) f.isFree = free;
+  if (free) f.price = 0;
+  else if (create || has('price')) {
+    f.price = whole(body.price, 'Selling price');
+    if (free === false && f.price === 0) throw new ApiError(400, 'A paid course needs a selling price above 0 (or switch it to Free)');
+  }
 
   if (has('instructor')) f.instructor = text(body.instructor, 'Instructor name', 60);
   if (has('description')) f.description = text(body.description, 'Short description', 300);
@@ -93,7 +101,8 @@ const cleanCourse = (body, { create }) => {
 
   if (has('weeks')) f.weeks = whole(body.weeks, 'Weeks', { min: 1, max: 200, nullable: true });
   if (has('lessons')) f.lessons = whole(body.lessons, 'Lessons', { min: 0, max: 5000, nullable: true });
-  if (has('originalPrice')) f.originalPrice = whole(body.originalPrice, 'Original price', { nullable: true });
+  if (has('originalPrice')) f.originalPrice = free ? null : whole(body.originalPrice, 'Original price', { nullable: true });
+  else if (free) f.originalPrice = null;
   if (has('studentsCount')) f.studentsCount = whole(body.studentsCount, 'Students', { max: 100000000 });
   if (has('order')) f.order = whole(body.order, 'Display order', { min: 0, max: 100000 });
 

@@ -17,6 +17,8 @@ export interface AdminCourse {
   studentsCount: number;
   price: number;
   originalPrice: number | null;
+  /** free course: any signed-in student can learn it without paying */
+  isFree: boolean;
   badge: string;
   isPopular: boolean;
   isActive: boolean;

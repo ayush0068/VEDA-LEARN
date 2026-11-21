@@ -8,6 +8,7 @@
     "start": "node src/server.js",
     "seed": "node src/scripts/seed.js",
     "create-admin": "node src/scripts/create-admin.js",
+    "migrate-uploads": "node src/scripts/migrate-uploads.js",
     "test-mail": "node src/scripts/test-mail.js"
   },
   "dependencies": {
@@ -19,7 +20,7 @@
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.11.2",
     "morgan": "^1.12.1",
-    "nodemailer": "^10.5.0",
+    "nodemailer": "^10.6.1",
     "socket.io": "^4.8.4"
   },
   "devDependencies": {

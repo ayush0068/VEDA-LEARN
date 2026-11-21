@@ -30,6 +30,7 @@ export interface CourseForm {
   originalPrice: string;
   discount: string; // % - derived from the two prices, editable
   price: string;
+  isFree: boolean;
   rating: string;
   studentsCount: string;
   order: string;
@@ -89,6 +90,7 @@ export const emptyForm = (): CourseForm => ({
   originalPrice: '',
   discount: '',
   price: '',
+  isFree: false,
   rating: '',
   studentsCount: '',
   order: '',
@@ -117,6 +119,7 @@ export const toForm = (c: AdminCourse, content: CourseContent): CourseForm => {
     originalPrice,
     discount: discountOf(price, originalPrice),
     price,
+    isFree: c.isFree || c.price === 0,
     rating: text(c.rating),
     studentsCount: text(c.studentsCount),
     order: String(c.order),
@@ -154,8 +157,8 @@ const isNumber = (s: string) => s.trim() === '' || Number.isFinite(Number(s));
 export const validate = (f: CourseForm): { tab: 'basic' | 'price' | 'page'; message: string } | null => {
   if (f.title.trim().length < 3) return { tab: 'basic', message: 'Please enter the course name (at least 3 characters).' };
   if (!f.category) return { tab: 'basic', message: 'Please choose a category.' };
-  if (f.price.trim() === '' || !(Number(f.price) >= 0)) return { tab: 'price', message: 'Please enter the selling price (use 0 for a free course).' };
-  if (f.originalPrice.trim() !== '' && Number(f.originalPrice) < Number(f.price)) return { tab: 'price', message: 'Original price must be higher than the selling price (or leave it empty).' };
+  if (!f.isFree && (f.price.trim() === '' || !(Number(f.price) > 0))) return { tab: 'price', message: 'Please enter the selling price above 0, or switch the course to Free.' };
+  if (!f.isFree && f.originalPrice.trim() !== '' && Number(f.originalPrice) < Number(f.price)) return { tab: 'price', message: 'Original price must be higher than the selling price (or leave it empty).' };
   if (![f.weeks, f.lessons, f.rating, f.studentsCount, f.order, f.originalPrice].every(isNumber)) return { tab: 'price', message: 'Please use numbers only in the number fields.' };
   if (f.rating.trim() !== '' && (Number(f.rating) < 0 || Number(f.rating) > 5)) return { tab: 'price', message: 'Rating must be between 0 and 5.' };
 
@@ -179,8 +182,9 @@ export const toPayload = (f: CourseForm, { create }: { create: boolean }): Cours
     language: f.language,
     weeks: orNull(f.weeks),
     lessons: orNull(f.lessons),
-    price: Number(f.price),
-    originalPrice: orNull(f.originalPrice),
+    price: f.isFree ? 0 : Number(f.price),
+    isFree: f.isFree,
+    originalPrice: f.isFree ? null : orNull(f.originalPrice),
     rating: Number(f.rating || 0),
     studentsCount: Number(f.studentsCount || 0),
     isPopular: f.isPopular,

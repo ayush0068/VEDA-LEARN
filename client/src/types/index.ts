@@ -52,6 +52,7 @@ export interface Course {
   studentsCount: number;
   price: number;
   originalPrice?: number;
+  isFree?: boolean; // free course: any signed-in student can learn it without paying
   badge?: string;
   order?: number;
   // Courses page (all optional, so older API responses still work)

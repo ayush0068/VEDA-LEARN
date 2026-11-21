@@ -77,9 +77,9 @@ const env = {
     from: process.env.MAIL_FROM || process.env.SMTP_USER || '',
   },
 
-  // Files uploaded from the admin panel (course images, preview videos, syllabus PDFs) are stored here
-  // and served at /uploads. NOTE: on hosts with a temporary disk (e.g. Render free) point this to a
-  // persistent disk, otherwise files are lost on every redeploy.
+  // New uploads from the admin panel are stored inside MongoDB (GridFS) and served at /api/media/<id>.
+  // This folder only holds OLD uploads (served at /uploads) and the temporary pieces of a class recording while it is
+  // running. Move old files into MongoDB with:  npm run migrate-uploads
   uploadDir: path.resolve(process.cwd(), process.env.UPLOAD_DIR || 'uploads'),
   // Public address of this API, used to build links to uploaded files. Leave empty to detect it from the request.
   publicApiUrl: (process.env.PUBLIC_API_URL || '').replace(/\/+$/, ''),
@@ -101,7 +101,18 @@ const env = {
         }
       }
       const list = [{ urls: ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302'] }];
-      if (process.env.TURN_URL) list.push({ urls: toList(process.env.TURN_URL, []), username: process.env.TURN_USERNAME || '', credential: process.env.TURN_CREDENTIAL || '' });
+      if (process.env.TURN_URL) {
+        list.push({ urls: toList(process.env.TURN_URL, []), username: process.env.TURN_USERNAME || '', credential: process.env.TURN_CREDENTIAL || '' });
+      } else {
+        // No TURN server configured: video / audio only works when both people are on the same network (e.g. localhost).
+        // Public relay of metered.ca (for testing, shared and rate-limited). For a real site add your own TURN_* variables.
+        console.warn('[env] TURN_URL is not set - live class video/audio will fail for many students on the internet. Using the shared test relay.');
+        list.push({
+          urls: ['turn:openrelay.metered.ca:80', 'turn:openrelay.metered.ca:443', 'turn:openrelay.metered.ca:443?transport=tcp', 'turns:openrelay.metered.ca:443?transport=tcp'],
+          username: 'openrelayproject',
+          credential: 'openrelayproject',
+        });
+      }
       return list;
     })(),
   },

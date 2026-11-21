@@ -6,7 +6,7 @@ import { useCart } from '@/context/CartContext';
 import { useSavedCourses } from '@/hooks/useSavedCourses';
 import { getCourses } from '@/services/course.service';
 import type { Course } from '@/types';
-import { formatPrice } from '@/utils/format';
+import { coursePrice } from '@/utils/format';
 import { SectionCard } from './ProfileParts';
 
 /** Courses bookmarked on the course cards. */
@@ -55,7 +55,7 @@ export default function WishlistSection() {
                 <Link to={`/courses/${c.slug}`} className="line-clamp-2 text-[0.92rem] font-semibold leading-snug text-veda-bark hover:text-saffron">
                   {c.title}
                 </Link>
-                <p className="mt-0.5 text-[0.85rem] text-veda-text">{formatPrice(c.price)}</p>
+                <p className="mt-0.5 text-[0.85rem] text-veda-text">{coursePrice(c)}</p>
                 <div className="mt-auto flex items-center gap-2 pt-2">
                   <button
                     type="button"

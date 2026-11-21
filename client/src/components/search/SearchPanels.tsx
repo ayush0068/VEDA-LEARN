@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import CourseThumb from '@/components/cart/CourseThumb';
 import { COURSE_TABS } from '@/constants/courseCatalog';
 import type { Course } from '@/types';
-import { formatPrice } from '@/utils/format';
+import { coursePrice } from '@/utils/format';
 import { highlightSegments } from '@/utils/search';
 
 const GLASS = 'border border-white/70 bg-white/55 shadow-[0_6px_20px_-12px_rgba(90,45,15,0.35)]';
@@ -73,7 +73,7 @@ function ResultRow({ course, index, query, active, onPick }: RowProps) {
             <Star size={12} className="fill-gold text-gold" aria-hidden />
             {course.rating.toFixed(1)}
           </span>
-          <span className="font-semibold text-veda-brown">{formatPrice(course.price)}</span>
+          <span className="font-semibold text-veda-brown">{coursePrice(course)}</span>
         </p>
       </div>
 

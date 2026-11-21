@@ -7,7 +7,7 @@ const { getDbState } = require('../config/db');
 const service = require('../services/liveClass.service');
 const ApiError = require('../utils/ApiError');
 const asyncHandler = require('../utils/asyncHandler');
-const { publicBase } = require('../utils/media');
+const { RECORDING_DIR, mediaPath, saveStream } = require('../utils/media');
 const { env } = require('../config/env');
 
 const TABS = ['upcoming', 'live', 'past', 'cancelled'];
@@ -141,7 +141,6 @@ const remove = asyncHandler(async (req, res) => {
 // ---- recording ----
 // The host's browser records the class and sends it in small pieces while the class runs (so nothing is lost if the tab
 // closes and the browser never has to keep a whole lesson in memory):  start -> chunk, chunk, ... -> finish
-const RECORDING_DIR = path.join(env.uploadDir, 'recordings');
 const MAX_CHUNK = 32 * 1024 * 1024;
 const MAX_RECORDING = 4 * 1024 * 1024 * 1024; // 4 GB per class
 const sessions = new Map(); // recordingId -> { classId, file, name, size }
@@ -189,7 +188,16 @@ const finishRecording = asyncHandler(async (req, res) => {
     throw new ApiError(400, 'The recording is empty');
   }
   const durationSec = Math.max(0, Math.round(Number(bodyOf(req).durationSec) || 0));
-  await service.setRecording(s.classId, { url: `${publicBase(req)}/uploads/recordings/${s.name}`, size: s.size, durationSec });
+  // the pieces were collected in a temporary file; move the finished recording into MongoDB (survives redeploys)
+  let id;
+  try {
+    id = await saveStream(fs.createReadStream(s.file), { filename: s.name, contentType: 'video/webm', kind: 'recording' });
+  } catch {
+    throw new ApiError(500, 'Could not save the recording. Please try again.');
+  } finally {
+    await fs.promises.unlink(s.file).catch(() => {});
+  }
+  await service.setRecording(s.classId, { url: mediaPath(id), size: s.size, durationSec });
   send(res, await service.getClassDetails(s.classId));
 });
 

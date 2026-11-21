@@ -6,7 +6,7 @@ const { resolveCoupon } = require('./coupon.service');
 const MAX_ITEMS = 50;
 const RECOMMENDED_COUNT = 4;
 const COURSE_FIELDS =
-  'slug title category image icon instructor description lessons weeks level language rating studentsCount price originalPrice badge -_id';
+  'slug title category image icon instructor description lessons weeks level language rating studentsCount price originalPrice isFree badge -_id';
 
 const SLUG_RE = /^[a-z0-9-]{1,100}$/;
 

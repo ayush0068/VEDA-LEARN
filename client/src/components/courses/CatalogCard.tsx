@@ -6,7 +6,7 @@ import { getIcon } from '@/constants/icons';
 import { useCart } from '@/context/CartContext';
 import { useSavedCourses } from '@/hooks/useSavedCourses';
 import type { Course } from '@/types';
-import { discountPercent, formatCount, formatPrice } from '@/utils/format';
+import { coursePrice, discountPercent, formatCount, formatPrice, isFreeCourse } from '@/utils/format';
 
 const FALLBACK_BG = [
   'from-veda-bark to-veda-brown',
@@ -43,10 +43,12 @@ export default function CatalogCard({ course, index }: CatalogCardProps) {
   const Icon = getIcon(course.icon);
   const href = `/courses/${course.slug}`;
   const saved = isSaved(course.slug);
-  const off = discountPercent(course.price, course.originalPrice);
+  const free = isFreeCourse(course);
+  const off = free ? 0 : discountPercent(course.price, course.originalPrice);
   const showImage = Boolean(course.image) && !imageFailed;
 
   const enroll = () => {
+    if (free) return navigate(`/learn/${course.slug}`);
     if (!has(course.slug)) toggle(course.slug);
     navigate('/cart');
   };
@@ -113,7 +115,7 @@ export default function CatalogCard({ course, index }: CatalogCardProps) {
         </ul>
 
         <p className="mt-auto flex flex-wrap items-baseline gap-x-2.5 gap-y-1 pt-4 lg:pt-3.5">
-          <span className="text-[1.6rem] font-bold leading-none text-veda-bark lg:text-[1.2rem]">{formatPrice(course.price)}</span>
+          <span className="text-[1.6rem] font-bold leading-none text-veda-bark lg:text-[1.2rem]">{coursePrice(course)}</span>
           {off > 0 && course.originalPrice && (
             <span className="text-[0.9rem] text-veda-muted line-through lg:text-[0.75rem]">{formatPrice(course.originalPrice)}</span>
           )}
@@ -127,7 +129,7 @@ export default function CatalogCard({ course, index }: CatalogCardProps) {
           onClick={enroll}
           className="mt-3 inline-flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-veda-brown text-[0.95rem] font-medium text-ivory transition-colors hover:bg-veda-bark lg:h-10 lg:text-[0.8rem]"
         >
-          Enroll Now <ArrowRight size={16} aria-hidden />
+          {free ? 'Start Learning' : 'Enroll Now'} <ArrowRight size={16} aria-hidden />
         </button>
       </div>
     </article>

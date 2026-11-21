@@ -5,7 +5,7 @@ import Mandala from '@/components/common/Mandala';
 import { getIcon } from '@/constants/icons';
 import { useCart } from '@/context/CartContext';
 import type { Course } from '@/types';
-import { formatCount, formatPrice } from '@/utils/format';
+import { coursePrice, formatCount, formatPrice, isFreeCourse } from '@/utils/format';
 
 const FALLBACK_BG = [
   'from-veda-bark to-veda-brown',
@@ -69,12 +69,17 @@ export default function CourseCard({ course, index }: CourseCardProps) {
 
         <div className="mt-auto flex items-end justify-between gap-2 pt-3">
           <p className="flex items-baseline gap-2">
-            <span className="text-lg font-bold text-veda-bark">{formatPrice(course.price)}</span>
-            {course.originalPrice && course.originalPrice > course.price && (
+            <span className="text-lg font-bold text-veda-bark">{coursePrice(course)}</span>
+            {!isFreeCourse(course) && course.originalPrice && course.originalPrice > course.price && (
               <span className="text-xs text-veda-muted line-through">{formatPrice(course.originalPrice)}</span>
             )}
           </p>
 
+          {isFreeCourse(course) ? (
+            <Link to={`/learn/${course.slug}`} aria-label={`Start ${course.title} for free`} className="flex h-9 shrink-0 items-center justify-center rounded-lg bg-veda-brown px-3 text-[0.78rem] font-semibold text-ivory hover:bg-veda-bark">
+              Start Free
+            </Link>
+          ) : (
           <button
             type="button"
             onClick={() => toggle(course.slug)}
@@ -86,6 +91,7 @@ export default function CourseCard({ course, index }: CourseCardProps) {
           >
             {inCart ? <Check size={17} aria-hidden /> : <ShoppingCart size={17} aria-hidden />}
           </button>
+          )}
         </div>
       </div>
     </article>

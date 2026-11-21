@@ -21,7 +21,7 @@ const isId = (value) => /^[a-f0-9]{24}$/i.test(String(value)) && mongoose.isVali
 const percentOf = (done, total) => (total > 0 ? Math.min(100, Math.floor((done / total) * 100)) : 0);
 
 const findCourse = async (slug) => {
-  const course = await Course.findOne({ slug: String(slug || '').toLowerCase() }).select('slug title image category instructor isActive').lean();
+  const course = await Course.findOne({ slug: String(slug || '').toLowerCase() }).select('slug title image category instructor isActive lessons price isFree').lean();
   if (!course) throw new ApiError(404, 'Course not found');
   return course;
 };
@@ -50,7 +50,19 @@ const loadPublished = async (slug) => {
 };
 
 const isAdmin = (user) => user.role === 'admin';
-const enrollmentOf = (progress, slug) => progress.enrollments.find((e) => e.courseSlug === slug);
+const isFreeCourse = (course) => course.isFree === true || course.price === 0;
+
+/**
+ * The student's enrollment in this course. For a FREE course any signed-in student is enrolled on the spot
+ * (so the course shows up in My Courses and progress is saved); paid courses need a real enrollment.
+ */
+const ensureEnrollment = async (user, progress, course) => {
+  const existing = progress.enrollments.find((e) => e.courseSlug === course.slug);
+  if (existing || !isFreeCourse(course) || isAdmin(user)) return existing;
+  progress.enrollments.push({ courseSlug: course.slug, title: course.title, totalLessons: Math.max(1, course.lessons || 1) });
+  await progress.save();
+  return progress.enrollments.find((e) => e.courseSlug === course.slug);
+};
 
 const doneIds = async (userId, slug) => new Set((await LessonProgress.find({ user: userId, courseSlug: slug }).select('lesson').lean()).map((p) => String(p.lesson)));
 
@@ -99,7 +111,7 @@ const summary = (flat, done) => {
 const getCourseLearning = async (user, slug) => {
   const course = await findCourse(slug);
   const progress = await getOrCreateProgress(user._id);
-  const enrollment = enrollmentOf(progress, course.slug);
+  const enrollment = await ensureEnrollment(user, progress, course);
   if (!enrollment && !isAdmin(user)) throw new ApiError(403, 'Enroll in this course to start learning');
 
   const { modules, flat } = await loadPublished(course.slug);
@@ -109,7 +121,7 @@ const getCourseLearning = async (user, slug) => {
 
   const resume = resumeLesson(flat, done);
   return {
-    course: { slug: course.slug, title: course.title, image: course.image || '', category: course.category, instructor: course.instructor || '' },
+    course: { slug: course.slug, title: course.title, image: course.image || '', category: course.category, instructor: course.instructor || '', isFree: isFreeCourse(course) },
     enrolled: Boolean(enrollment),
     hasCurriculum: flat.length > 0,
     progress: summary(flat, done),
@@ -136,7 +148,7 @@ const getLesson = async (user, id) => {
   if (at < 0) throw new ApiError(404, 'Lesson not found'); // its module is a draft
 
   const progress = await getOrCreateProgress(user._id);
-  const enrolled = Boolean(enrollmentOf(progress, course.slug));
+  const enrolled = Boolean(await ensureEnrollment(user, progress, course));
   if (!enrolled && !isAdmin(user) && !lesson.isPreview) throw new ApiError(403, 'Enroll in this course to watch this lesson');
 
   const done = await doneIds(user._id, course.slug);
@@ -171,7 +183,7 @@ const setCompleted = async (user, id, completed) => {
 
   const course = await findCourse(lesson.courseSlug);
   const progress = await getOrCreateProgress(user._id);
-  const enrollment = enrollmentOf(progress, course.slug);
+  const enrollment = await ensureEnrollment(user, progress, course);
   if (!enrollment) throw new ApiError(403, 'Enroll in this course to track your progress');
 
   const { flat } = await loadPublished(course.slug);

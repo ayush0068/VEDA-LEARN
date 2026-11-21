@@ -54,7 +54,7 @@ export default function CourseCard({ course: c, categoryLabel, actions }: { cour
         </div>
 
         <p className="mt-2.5 flex flex-wrap items-baseline gap-x-2">
-          <span className="font-display text-[1.3rem] font-bold text-veda-bark">{c.price === 0 ? 'Free' : rupees(c.price)}</span>
+          <span className="font-display text-[1.3rem] font-bold text-veda-bark">{c.isFree || c.price === 0 ? 'Free' : rupees(c.price)}</span>
           {off > 0 && c.originalPrice && <span className="text-[0.8rem] text-veda-muted line-through">{rupees(c.originalPrice)}</span>}
           {off > 0 && <span className="rounded-md bg-gold-pale px-2 py-0.5 text-[0.7rem] font-semibold text-saffron">{off}% OFF</span>}
         </p>
