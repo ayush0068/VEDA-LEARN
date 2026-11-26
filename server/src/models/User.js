@@ -17,6 +17,19 @@ const userSchema = new mongoose.Schema(
     // true while the account still has an admin-generated temporary password: the student must set their own on first login
     mustChangePassword: { type: Boolean, default: false },
     lastLoginAt: { type: Date },
+
+    // --- admin panel (only used when role === 'admin') ---
+    // the owner of the site: can add / remove admins, choose what each one may do and watch what they do
+    isSuperAdmin: { type: Boolean, default: false },
+    adminAccess: {
+      title: { type: String, trim: true, maxlength: 60, default: '' }, // e.g. "Content Manager"
+      preset: { type: String, trim: true, maxlength: 20, default: 'custom' },
+      // { students: 'view' | 'edit' | 'full' | 'none', courses: ..., ... } (see config/adminAccess.js)
+      permissions: { type: mongoose.Schema.Types.Mixed, default: {} },
+      createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+      createdByName: { type: String, default: '' },
+      lastActiveAt: { type: Date },
+    },
     // tokens issued before this moment are rejected (set when the password is changed)
     passwordChangedAt: { type: Date },
 

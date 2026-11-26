@@ -115,7 +115,7 @@ export default function Topbar({ onMenu }: { onMenu: () => void }) {
               </span>
               <span className="hidden text-left leading-tight sm:block">
                 <span className="block max-w-[9rem] truncate text-[0.95rem] font-semibold text-veda-bark">{user?.name ?? 'Admin'}</span>
-                <span className="block text-[0.8rem] text-veda-muted">Administrator</span>
+                <span className="block max-w-[9rem] truncate text-[0.8rem] text-veda-muted">{user?.admin?.title ?? 'Administrator'}</span>
               </span>
               <ChevronDown size={16} className={`hidden text-veda-bark transition sm:block ${menuOpen ? 'rotate-180' : ''}`} aria-hidden />
             </button>

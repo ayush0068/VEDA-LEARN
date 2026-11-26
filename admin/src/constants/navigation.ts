@@ -22,11 +22,15 @@ import {
   Video,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
+import type { ModuleKey } from '@/types/team';
 
 export interface NavItem {
   label: string;
   to: string;
   icon: LucideIcon;
+  /** the permission that shows this item (items without one, or with superOnly, are for the super admin) */
+  module?: ModuleKey;
+  superOnly?: boolean;
 }
 
 export interface NavGroup {
@@ -40,17 +44,17 @@ export const NAV_GROUPS: NavGroup[] = [
   {
     title: 'User Management',
     items: [
-      { label: 'Students', to: '/students', icon: UsersRound },
-      { label: 'Instructors', to: '/instructors', icon: Users },
-      { label: 'Admins & Roles', to: '/admins-roles', icon: ShieldCheck },
+      { label: 'Students', to: '/students', icon: UsersRound, module: 'students' },
+      { label: 'Instructors', to: '/instructors', icon: Users, module: 'instructors' },
+      { label: 'Admins & Roles', to: '/admins-roles', icon: ShieldCheck, superOnly: true },
     ],
   },
   {
     title: 'Course Management',
     items: [
-      { label: 'Courses', to: '/courses', icon: BookOpen },
+      { label: 'Courses', to: '/courses', icon: BookOpen, module: 'courses' },
       { label: 'Categories', to: '/categories', icon: LayoutGrid },
-      { label: 'Modules & Lessons', to: '/modules-lessons', icon: Layers },
+      { label: 'Modules & Lessons', to: '/modules-lessons', icon: Layers, module: 'curriculum' },
       { label: 'Quizzes & Assignments', to: '/quizzes-assignments', icon: ClipboardCheck },
       { label: 'Certificates', to: '/certificates', icon: Award },
     ],
@@ -58,7 +62,7 @@ export const NAV_GROUPS: NavGroup[] = [
   {
     title: 'Live Classes',
     items: [
-      { label: 'Live Classes', to: '/live-classes', icon: Video },
+      { label: 'Live Classes', to: '/live-classes', icon: Video, module: 'liveClasses' },
       { label: 'Schedules', to: '/schedules', icon: CalendarDays },
       { label: 'Recordings', to: '/recordings', icon: CirclePlay },
     ],

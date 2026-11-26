@@ -1,8 +1,10 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { env } = require('../config/env');
+const { accessOf } = require('../config/adminAccess');
 const User = require('../models/User');
 const ApiError = require('../utils/ApiError');
+const { recordActivity } = require('./adminActivity.service');
 
 const BCRYPT_ROUNDS = 12;
 // Compared against when the email doesn't exist, so "unknown email" and "wrong password"
@@ -11,6 +13,8 @@ const DUMMY_HASH = bcrypt.hashSync('vedalearn-not-a-real-password', BCRYPT_ROUND
 
 const toPublicUser = (user) => ({
   id: String(user._id),
+  // admins also get what they are allowed to do (the panel hides everything else)
+  ...(user.role === 'admin' ? { admin: accessOf(user) } : {}),
   name: user.name,
   email: user.email,
   role: user.role,
@@ -48,15 +52,24 @@ const registerUser = async ({ name, email, password }) => {
   return { user: toPublicUser(user), token: signToken(user, true) };
 };
 
-/** Checks the credentials. Returns { user, token }. */
-const loginUser = async ({ email, password, remember }) => {
+/** Checks the credentials. Returns { user, token }. `req` is only used to note the device in the admin record book. */
+const loginUser = async ({ email, password, remember, req }) => {
   const user = await User.findOne({ email }).select('+passwordHash');
 
   const passwordOk = await bcrypt.compare(password, user ? user.passwordHash : DUMMY_HASH);
-  if (!user || !passwordOk) throw new ApiError(401, 'Invalid email or password');
-  if (!user.isActive) throw new ApiError(403, 'This account has been disabled. Please contact support.');
+  const adminLog = (action, summary, outcome, status) => user && user.role === 'admin' && recordActivity({ user, type: 'auth', action, module: 'auth', summary, outcome, status, req, method: 'POST', path: '/api/auth/login' });
 
-  await User.updateOne({ _id: user._id }, { $set: { lastLoginAt: new Date() } });
+  if (!user || !passwordOk) {
+    await adminLog('auth.login_failed', 'Wrong password on a sign-in attempt', 'failed', 401);
+    throw new ApiError(401, 'Invalid email or password');
+  }
+  if (!user.isActive) {
+    await adminLog('auth.login_failed', 'Tried to sign in to a suspended account', 'denied', 403);
+    throw new ApiError(403, 'This account has been disabled. Please contact support.');
+  }
+
+  await User.updateOne({ _id: user._id }, { $set: { lastLoginAt: new Date(), 'adminAccess.lastActiveAt': new Date() } });
+  await adminLog('auth.login', 'Signed in', 'success', 200);
 
   return { user: toPublicUser(user), token: signToken(user, Boolean(remember)) };
 };

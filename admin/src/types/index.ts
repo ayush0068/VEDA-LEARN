@@ -1,9 +1,15 @@
+import type { AdminAccess } from './team';
+
 export interface AdminUser {
   id: string;
   name: string;
   email: string;
   role: 'student' | 'admin';
   avatar?: string;
+  /** still using the temporary password the super admin generated: must choose a new one first */
+  mustChangePassword?: boolean;
+  /** what this admin is allowed to do (only for role 'admin') */
+  admin?: AdminAccess;
 }
 
 export interface Student {

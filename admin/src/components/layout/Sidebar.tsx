@@ -1,6 +1,7 @@
 import { ChevronRight } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { LotusMark, MandalaMark, TempleSilhouette } from '@/components/common/Art';
+import { useAuth } from '@/context/AuthContext';
 import { DASHBOARD_ITEM, NAV_GROUPS } from '@/constants/navigation';
 import type { NavItem } from '@/constants/navigation';
 
@@ -38,6 +39,11 @@ function SideLink({ item, onNavigate }: { item: NavItem; onNavigate?: () => void
 
 /** Left navigation. Used as the fixed desktop column and inside the mobile drawer. */
 export default function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
+  const { can, isSuper } = useAuth();
+  // an admin only sees the sections they were given (the super admin sees everything)
+  const allowed = (item: NavItem) => (item.superOnly ? isSuper : item.module ? can(item.module) : isSuper);
+  const groups = NAV_GROUPS.map((g) => ({ ...g, items: g.items.filter(allowed) })).filter((g) => g.items.length > 0);
+
   return (
     <div className="relative flex h-full flex-col overflow-hidden bg-gradient-to-b from-[#F8E4C9] via-[#FBEBD4] to-[#F5DAB8]">
       {/* faint art behind the menu */}
@@ -64,7 +70,7 @@ export default function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
       <nav aria-label="Admin navigation" className="thin-scroll relative flex-1 overflow-y-auto px-3.5 pb-20 pt-3.5">
         <SideLink item={DASHBOARD_ITEM} onNavigate={onNavigate} />
 
-        {NAV_GROUPS.map((group) => (
+        {groups.map((group) => (
           <div key={group.title} className="mt-3">
             <p className="mb-1.5 flex items-center gap-1.5 px-1 text-[0.68rem] font-bold uppercase tracking-[0.06em] text-[#8F4F1E]">
               {group.title}

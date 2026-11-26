@@ -3,6 +3,8 @@ const { connectDB, disconnectDB } = require('./config/db');
 const { env } = require('./config/env');
 const { initLiveSocket } = require('./live/socket');
 const { closeStaleLiveClasses } = require('./services/liveClass.service');
+const { flushAll: flushAdminActivity } = require('./services/adminActivity.service');
+const { ensureSuperAdmin } = require('./services/adminTeam.service');
 const { seedAllIfEmpty } = require('./services/seed.service');
 
 let server;
@@ -18,6 +20,16 @@ const start = async () => {
       });
     } catch (err) {
       console.warn('[seed] auto-seed skipped:', err.message);
+    }
+  }
+
+  // admin roles: somebody has to own the panel (see services/adminTeam.service.js)
+  if (dbConnected) {
+    try {
+      const owner = await ensureSuperAdmin();
+      if (owner) console.log(`[admin] ${owner} is now the super admin (they can add admins and choose what each one may do)`);
+    } catch (err) {
+      console.warn('[admin] super admin check skipped:', err.message);
     }
   }
 
@@ -44,6 +56,7 @@ const shutdown = (signal) => {
   console.log(`\n[server] ${signal} received, shutting down...`);
   if (server) {
     server.close(async () => {
+      await flushAdminActivity().catch(() => {});
       await disconnectDB();
       process.exit(0);
     });

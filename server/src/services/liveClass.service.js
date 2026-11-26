@@ -1,3 +1,4 @@
+const { can } = require('../config/adminAccess');
 const { env } = require('../config/env');
 const Course = require('../models/Course');
 const InstructorProfile = require('../models/InstructorProfile');
@@ -87,11 +88,11 @@ const toStudent = (c, titles, extra = {}) => {
 const getOptions = async () => {
   const [courses, users, profiles] = await Promise.all([
     Course.find({ isActive: { $ne: false } }).select('slug title').sort({ title: 1 }).lean(),
-    User.find({ role: { $in: ['admin', 'instructor'] }, isActive: true }).select('name role').sort({ name: 1 }).lean(),
+    User.find({ role: { $in: ['admin', 'instructor'] }, isActive: true }).select('name role isSuperAdmin adminAccess').sort({ name: 1 }).lean(),
     InstructorProfile.find({ 'permissions.hostLiveClasses': true }).select('user').lean(),
   ]);
   const allowed = new Set(profiles.map((p) => String(p.user)));
-  const hosts = users.filter((u) => u.role === 'admin' || allowed.has(String(u._id))).map((u) => ({ id: String(u._id), name: u.name, role: u.role }));
+  const hosts = users.filter((u) => (u.role === 'admin' ? can(u, 'liveClasses', 'edit') : allowed.has(String(u._id)))).map((u) => ({ id: String(u._id), name: u.name, role: u.role }));
 
   return {
     courses: courses.map((c) => ({ slug: c.slug, title: c.title })),
@@ -177,8 +178,9 @@ const getClassDetails = async (id) => {
 // admin: write
 // ------------------------------------------------------------------------------------------------
 const assertHost = async (hostId) => {
-  const user = await User.findById(hostId).select('name role isActive');
+  const user = await User.findById(hostId).select('name role isActive isSuperAdmin adminAccess');
   if (!user || !user.isActive || !['admin', 'instructor'].includes(user.role)) throw new ApiError(400, 'Please choose a valid host');
+  if (user.role === 'admin' && !can(user, 'liveClasses', 'edit')) throw new ApiError(400, `${user.name} is not allowed to host live classes`);
   if (user.role === 'instructor') {
     const profile = await InstructorProfile.findOne({ user: user._id }).select('permissions').lean();
     if (!profile?.permissions?.hostLiveClasses) throw new ApiError(400, `${user.name} does not have the "Host live classes" permission`);
@@ -343,7 +345,7 @@ const getPublic = async (id) => {
 // ------------------------------------------------------------------------------------------------
 // signalling server helpers (live/socket.js)
 // ------------------------------------------------------------------------------------------------
-const isHost = (user, cls) => user.role === 'admin' || (user.role === 'instructor' && String(cls.host?._id || cls.host) === String(user._id));
+const isHost = (user, cls) => (user.role === 'admin' && can(user, 'liveClasses', 'edit')) || (user.role === 'instructor' && String(cls.host?._id || cls.host) === String(user._id));
 
 /**
  * Decides whether `user` may enter the room of class `id`.

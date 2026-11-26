@@ -5,8 +5,12 @@ const User = require('../models/User');
 // Usage:  npm run create-admin -- "Your Name" you@example.com "StrongPass123"
 //   or:   ADMIN_NAME=.. ADMIN_EMAIL=.. ADMIN_PASSWORD=.. npm run create-admin
 // Creates the first admin (or promotes + resets the password of an existing account with that email).
+// The first admin of a site automatically becomes the SUPER ADMIN (the one who adds other admins in the panel).
+// Add --super to make this account the super admin even if somebody else already is (the old super admin is demoted to a normal admin).
 const run = async () => {
-  const [argName, argEmail, argPassword] = process.argv.slice(2);
+  const args = process.argv.slice(2);
+  const makeSuper = args.includes('--super');
+  const [argName, argEmail, argPassword] = args.filter((a) => a !== '--super');
   const name = (argName || process.env.ADMIN_NAME || 'Admin').trim();
   const email = (argEmail || process.env.ADMIN_EMAIL || '').trim().toLowerCase();
   const password = argPassword || process.env.ADMIN_PASSWORD || '';
@@ -28,14 +32,17 @@ const run = async () => {
 
   const passwordHash = await bcrypt.hash(password, 12);
   const existing = await User.findOne({ email });
+  const hasSuper = Boolean(await User.exists({ role: 'admin', isSuperAdmin: true, ...(existing ? { _id: { $ne: existing._id } } : {}) }));
+  const becomeSuper = makeSuper || !hasSuper;
+  if (makeSuper && hasSuper) await User.updateMany({ role: 'admin', isSuperAdmin: true }, { $set: { isSuperAdmin: false } });
 
   if (existing) {
-    existing.set({ role: 'admin', isActive: true, mustChangePassword: false, passwordHash, passwordChangedAt: new Date(Math.floor(Date.now() / 1000) * 1000) });
+    existing.set({ role: 'admin', isActive: true, mustChangePassword: false, ...(becomeSuper ? { isSuperAdmin: true } : {}), passwordHash, passwordChangedAt: new Date(Math.floor(Date.now() / 1000) * 1000) });
     await existing.save();
-    console.log(`[admin] ${email} is now an admin (password updated).`);
+    console.log(`[admin] ${email} is now ${becomeSuper ? 'the SUPER admin' : 'an admin'} (password updated).`);
   } else {
-    await User.create({ name, email, passwordHash, role: 'admin' });
-    console.log(`[admin] Admin created: ${email}`);
+    await User.create({ name, email, passwordHash, role: 'admin', isSuperAdmin: becomeSuper });
+    console.log(`[admin] ${becomeSuper ? 'Super admin' : 'Admin'} created: ${email}`);
   }
 
   await disconnectDB();

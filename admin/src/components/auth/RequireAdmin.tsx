@@ -1,5 +1,6 @@
 import { Navigate, useLocation } from 'react-router-dom';
 import type { ReactNode } from 'react';
+import ForcePasswordChange from '@/components/auth/ForcePasswordChange';
 import { useAuth } from '@/context/AuthContext';
 
 /** Only signed-in admins get in; everyone else is sent to /login and brought back afterwards. */
@@ -15,5 +16,7 @@ export default function RequireAdmin({ children }: { children: ReactNode }) {
     );
   }
   if (!user) return <Navigate to="/login" replace state={{ from: location }} />;
+  // an admin added by the super admin starts with a temporary password and must choose their own first
+  if (user.mustChangePassword) return <ForcePasswordChange />;
   return <>{children}</>;
 }

@@ -1,6 +1,8 @@
 import { Route, Routes } from 'react-router-dom';
 import RequireAdmin from '@/components/auth/RequireAdmin';
+import RequirePermission from '@/components/auth/RequirePermission';
 import AdminLayout from '@/components/layout/AdminLayout';
+import AdminsRoles from '@/pages/AdminsRoles';
 import ComingSoon from '@/pages/ComingSoon';
 import Courses from '@/pages/Courses';
 import Dashboard from '@/pages/Dashboard';
@@ -10,6 +12,9 @@ import LiveRoomHost from '@/pages/LiveRoomHost';
 import Login from '@/pages/Login';
 import ModulesLessons from '@/pages/ModulesLessons';
 import Students from '@/pages/Students';
+
+type GuardProps = Parameters<typeof RequirePermission>[0];
+const Guard = (props: GuardProps) => <RequirePermission {...props} />;
 
 export default function App() {
   return (
@@ -21,7 +26,9 @@ export default function App() {
         path="live-classes/:id/room"
         element={
           <RequireAdmin>
-            <LiveRoomHost />
+            <Guard module="liveClasses" level="edit">
+              <LiveRoomHost />
+            </Guard>
           </RequireAdmin>
         }
       />
@@ -34,16 +41,18 @@ export default function App() {
         }
       >
         <Route index element={<Dashboard />} />
-        <Route path="courses" element={<Courses />} />
-        <Route path="courses/new" element={<Courses startWithAdd />} />
-        <Route path="instructors" element={<Instructors />} />
-        <Route path="instructors/new" element={<Instructors startWithAdd />} />
-        <Route path="students" element={<Students />} />
+        <Route path="courses" element={<Guard module="courses"><Courses /></Guard>} />
+        <Route path="courses/new" element={<Guard module="courses" level="edit"><Courses startWithAdd /></Guard>} />
+        <Route path="instructors" element={<Guard module="instructors"><Instructors /></Guard>} />
+        <Route path="instructors/new" element={<Guard module="instructors" level="edit"><Instructors startWithAdd /></Guard>} />
+        <Route path="students" element={<Guard module="students"><Students /></Guard>} />
         {/* "Add Student" quick action on the dashboard opens the same page with the form already open */}
-        <Route path="students/new" element={<Students startWithAdd />} />
-        <Route path="live-classes" element={<LiveClasses />} />
-        <Route path="modules-lessons" element={<ModulesLessons />} />
-        <Route path="modules-lessons/:slug" element={<ModulesLessons />} />
+        <Route path="students/new" element={<Guard module="students" level="edit"><Students startWithAdd /></Guard>} />
+        <Route path="live-classes" element={<Guard module="liveClasses"><LiveClasses /></Guard>} />
+        <Route path="modules-lessons" element={<Guard module="curriculum"><ModulesLessons /></Guard>} />
+        <Route path="modules-lessons/:slug" element={<Guard module="curriculum"><ModulesLessons /></Guard>} />
+        {/* only the super admin: add / remove admins, choose what each may do, watch what they do */}
+        <Route path="admins-roles" element={<RequirePermission superOnly><AdminsRoles /></RequirePermission>} />
         {/* every other sidebar item opens a placeholder until its screen is built */}
         <Route path="*" element={<ComingSoon />} />
       </Route>

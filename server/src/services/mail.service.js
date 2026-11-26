@@ -35,7 +35,7 @@ const sendCredentialsEmail = async ({ to, name, password, accountType = 'student
     throw new ApiError(503, 'Email is not configured on the server (set SMTP_* in server/.env)');
   }
 
-  const loginUrl = `${env.publicSiteUrl}/login`;
+  const loginUrl = `${accountType === 'admin' && env.publicAdminUrl ? env.publicAdminUrl : env.publicSiteUrl}/login`;
   const safeName = escapeHtml(name);
 
   const text = [

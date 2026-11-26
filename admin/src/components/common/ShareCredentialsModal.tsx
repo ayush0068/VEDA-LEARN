@@ -21,6 +21,8 @@ interface Props {
   onEmail: (id: string, password: string) => Promise<unknown>;
   onClose: () => void;
   doneLabel?: string;
+  /** where the person signs in (defaults to the public site; admins sign in to the panel) */
+  loginLink?: string;
 }
 
 export default function ShareCredentialsModal(props: Props) {
@@ -28,7 +30,7 @@ export default function ShareCredentialsModal(props: Props) {
   return <Body key={props.view.person.id + props.view.temporaryPassword} {...props} view={props.view} />;
 }
 
-function Body({ view, noun, emailConfigured, onEmail, onClose, doneLabel = 'Done' }: Props & { view: ShareView }) {
+function Body({ view, noun, emailConfigured, onEmail, onClose, doneLabel = 'Done', loginLink = loginUrl }: Props & { view: ShareView }) {
   const { person, temporaryPassword, reason } = view;
   const toast = useToast();
   const [visible, setVisible] = useState(true);
@@ -40,7 +42,7 @@ function Body({ view, noun, emailConfigured, onEmail, onClose, doneLabel = 'Done
     '',
     `Your VedaLearn ${noun} account is ready.`,
     '',
-    `Login: ${loginUrl}`,
+    `Login: ${loginLink}`,
     `Email: ${person.email}`,
     `Temporary password: ${temporaryPassword}`,
     '',

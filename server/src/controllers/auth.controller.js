@@ -62,7 +62,7 @@ const login = asyncHandler(async (req, res) => {
   if (password.length > 200) throw new ApiError(401, 'Invalid email or password');
   assertDb();
 
-  const { user, token } = await loginUser({ email, password, remember: body.remember === true });
+  const { user, token } = await loginUser({ email, password, remember: body.remember === true, req });
 
   res.set('Cache-Control', 'no-store');
   res.json({ success: true, message: 'Signed in successfully', data: { user, token } });

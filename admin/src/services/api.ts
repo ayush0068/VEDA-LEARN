@@ -20,6 +20,15 @@ export const getToken = (): string | null => {
   }
 };
 
+/** true when the saved sign-in survives closing the browser ("remember me") */
+export const tokenIsRemembered = (): boolean => {
+  try {
+    return localStorage.getItem(TOKEN_KEY) !== null;
+  } catch {
+    return false;
+  }
+};
+
 export const setToken = (token: string, remember: boolean): void => {
   try {
     (remember ? localStorage : sessionStorage).setItem(TOKEN_KEY, token);

@@ -1,12 +1,14 @@
 import { Award, BookOpen, CircleX, CreditCard, Monitor, Settings, UserPlus, UsersRound, Video } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Card } from '@/components/common/Card';
+import { useAuth } from '@/context/AuthContext';
+import type { ModuleKey } from '@/types/team';
 
-const TILES = [
-  { title: 'Courses', note: 'Create, edit & manage', to: '/courses', icon: BookOpen },
-  { title: 'Students', note: 'Manage learners', to: '/students', icon: UsersRound },
-  { title: 'Instructors', note: 'Add & manage teachers', to: '/instructors', icon: UserPlus },
-  { title: 'Live Classes', note: 'Schedule & control', to: '/live-classes', icon: Video },
+const TILES: { title: string; note: string; to: string; icon: typeof BookOpen; module?: ModuleKey }[] = [
+  { title: 'Courses', note: 'Create, edit & manage', to: '/courses', icon: BookOpen, module: 'courses' },
+  { title: 'Students', note: 'Manage learners', to: '/students', icon: UsersRound, module: 'students' },
+  { title: 'Instructors', note: 'Add & manage teachers', to: '/instructors', icon: UserPlus, module: 'instructors' },
+  { title: 'Live Classes', note: 'Schedule & control', to: '/live-classes', icon: Video, module: 'liveClasses' },
   { title: 'Orders & Payments', note: 'Track & manage', to: '/orders', icon: CreditCard },
   { title: 'Certificates', note: 'Issue & verify', to: '/certificates', icon: Award },
   { title: 'Website Content', note: 'Pages, blogs, banners', to: '/pages-content', icon: Monitor },
@@ -14,6 +16,10 @@ const TILES = [
 ];
 
 export default function ManagementGrid() {
+  const { can, isSuper } = useAuth();
+  const tiles = TILES.filter((t) => (t.module ? can(t.module) : isSuper));
+  if (tiles.length === 0) return null;
+
   return (
     <Card className="p-4">
       <header className="flex items-center gap-2.5">
@@ -22,7 +28,7 @@ export default function ManagementGrid() {
       </header>
 
       <div className="mt-4 grid grid-cols-2 gap-2.5 sm:grid-cols-4 xl:grid-cols-8">
-        {TILES.map(({ title, note, to, icon: Icon }) => (
+        {tiles.map(({ title, note, to, icon: Icon }) => (
           <Link
             key={title}
             to={to}

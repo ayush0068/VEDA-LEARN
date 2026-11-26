@@ -1,12 +1,11 @@
 const { Router } = require('express');
 const controller = require('../../controllers/adminCourse.controller');
-const { upload } = require('../../controllers/adminUpload.controller');
 
 const router = Router();
 
-// fixed paths first, so "options" / "upload" are never read as a :slug
+// fixed paths first, so "options" is never read as a :slug
+// (file uploads, POST /upload/:kind, are wired in routes/admin/index.js because Lessons use them too)
 router.get('/options', controller.options);
-router.post('/upload/:kind', upload);
 
 router.get('/', controller.listAll);
 router.post('/', controller.create);

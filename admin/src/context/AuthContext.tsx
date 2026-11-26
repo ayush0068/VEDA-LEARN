@@ -1,8 +1,11 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
-import { ApiError, UNAUTHORIZED_EVENT, clearToken, getToken, setToken } from '@/services/api';
-import { getMe, loginRequest } from '@/services/auth.service';
+import { ApiError, UNAUTHORIZED_EVENT, clearToken, getToken, setToken, tokenIsRemembered } from '@/services/api';
+import { changePassword, getMe, loginRequest } from '@/services/auth.service';
 import type { AdminUser } from '@/types';
+import type { AccessLevel, ModuleKey } from '@/types/team';
+
+const RANK: Record<AccessLevel, number> = { none: 0, view: 1, edit: 2, full: 3 };
 
 interface AuthContextValue {
   user: AdminUser | null;
@@ -10,6 +13,14 @@ interface AuthContextValue {
   loading: boolean;
   login: (input: { email: string; password: string; remember: boolean }) => Promise<void>;
   logout: () => void;
+  /** true for the super admin (owner of the panel) */
+  isSuper: boolean;
+  /** does this admin have at least `level` in a module? (the super admin has everything) */
+  can: (module: ModuleKey, level?: AccessLevel) => boolean;
+  /** first sign-in: replaces the temporary password and keeps the admin signed in */
+  setOwnPassword: (currentPassword: string, newPassword: string) => Promise<void>;
+  /** re-reads the admin (and what they may do) from the server */
+  refresh: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -57,7 +68,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
   }, []);
 
-  const value = useMemo(() => ({ user, loading, login, logout }), [user, loading, login, logout]);
+  const isSuper = Boolean(user?.admin?.isSuper);
+
+  const can = useCallback(
+    (module: ModuleKey, level: AccessLevel = 'view') => {
+      const have = user?.admin?.permissions[module] ?? 'none';
+      return RANK[have] >= RANK[level];
+    },
+    [user],
+  );
+
+  const refresh = useCallback(async () => {
+    const me = await getMe();
+    if (me.role === 'admin') setUser(me);
+  }, []);
+
+  const setOwnPassword = useCallback(async (currentPassword: string, newPassword: string) => {
+    const remember = tokenIsRemembered();
+    const { token } = await changePassword({ currentPassword, newPassword, remember });
+    setToken(token, remember);
+    const me = await getMe();
+    setUser(me);
+  }, []);
+
+  const value = useMemo(() => ({ user, loading, login, logout, isSuper, can, setOwnPassword, refresh }), [user, loading, login, logout, isSuper, can, setOwnPassword, refresh]);
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 

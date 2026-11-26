@@ -66,6 +66,8 @@ const env = {
 
   // Where students sign in (used in the credentials e-mail). Defaults to the first allowed frontend.
   publicSiteUrl: (process.env.PUBLIC_SITE_URL || toList(process.env.CLIENT_URLS, ['http://localhost:5173'])[0]).replace(/\/+$/, ''),
+  // where admins sign in (the admin panel). Used in the e-mail that gives a new admin their login. Empty = the public site address.
+  publicAdminUrl: (process.env.PUBLIC_ADMIN_URL || '').trim().replace(/\/+$/, ''),
 
   // Optional SMTP settings. Without them the admin panel falls back to the admin's own mail app (mailto:).
   smtp: {
