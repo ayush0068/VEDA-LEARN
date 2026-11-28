@@ -15,6 +15,7 @@ const MODULES = [
   { key: 'instructors', label: 'Instructors', group: 'User Management', description: 'Instructor accounts, their access, courses and weekly schedule' },
   { key: 'courses', label: 'Courses', group: 'Course Management', description: 'Create and edit courses, prices, free / paid, images and videos' },
   { key: 'curriculum', label: 'Modules & Lessons', group: 'Course Management', description: 'Build the modules and lessons of a course' },
+  { key: 'assessments', label: 'Quizzes & Assignments', group: 'Course Management', description: 'Build quizzes, set assignments, see results and grade student work' },
   { key: 'liveClasses', label: 'Live Classes', group: 'Live Classes', description: 'Schedule, host and record live classes' },
 ];
 
@@ -34,7 +35,7 @@ const all = (level) => Object.fromEntries(MODULE_KEYS.map((key) => [key, level])
 
 /** starting points: the super admin can still change every single module afterwards */
 const PRESETS = [
-  { value: 'content', label: 'Content Manager', description: 'Builds courses, modules and lessons.', permissions: grant({ courses: 'full', curriculum: 'full', instructors: 'view' }) },
+  { value: 'content', label: 'Content Manager', description: 'Builds courses, modules and lessons.', permissions: grant({ courses: 'full', curriculum: 'full', assessments: 'full', instructors: 'view' }) },
   { value: 'live', label: 'Live Class Manager', description: 'Schedules and runs live classes.', permissions: grant({ liveClasses: 'full', courses: 'view', instructors: 'view' }) },
   { value: 'support', label: 'Student Support', description: 'Helps students with accounts and passwords.', permissions: grant({ students: 'edit', courses: 'view' }) },
   { value: 'people', label: 'People Manager', description: 'Manages students and instructors.', permissions: grant({ students: 'full', instructors: 'full', liveClasses: 'view' }) },

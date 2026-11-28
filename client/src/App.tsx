@@ -15,6 +15,8 @@ import Contact from '@/pages/Contact';
 import About from '@/pages/About';
 import CourseDetail from '@/pages/CourseDetail';
 import Courses from '@/pages/Courses';
+import AssignmentPage from '@/pages/AssignmentPage';
+import DashboardAssessments from '@/pages/DashboardAssessments';
 import DashboardLiveClasses from '@/pages/DashboardLiveClasses';
 import DashboardComingSoon from '@/pages/DashboardComingSoon';
 import DashboardMyCourses from '@/pages/DashboardMyCourses';
@@ -25,6 +27,9 @@ import LiveClasses from '@/pages/LiveClasses';
 import LiveRoomStudent from '@/pages/LiveRoomStudent';
 import Login from '@/pages/Login';
 import PlaceholderPage from '@/pages/PlaceholderPage';
+import QuizIntro from '@/pages/QuizIntro';
+import QuizPlayer from '@/pages/QuizPlayer';
+import QuizResult from '@/pages/QuizResult';
 import Profile from '@/pages/Profile';
 import Register from '@/pages/Register';
 import StudentDashboard from '@/pages/StudentDashboard';
@@ -44,11 +49,18 @@ export default function App() {
       <Route path="learn/:slug" element={<RequireAuth><CoursePlayer /></RequireAuth>} />
       <Route path="learn/:slug/:lessonId" element={<RequireAuth><CoursePlayer /></RequireAuth>} />
 
+      {/* the quiz itself is full screen too (timer, one question at a time) */}
+      <Route path="quiz/:attemptId" element={<RequireAuth><QuizPlayer /></RequireAuth>} />
+
       {/* Student area: signed-in students only, own layout (top bar + side menu), no website footer */}
       <Route path="dashboard" element={<RequireAuth><DashboardLayout /></RequireAuth>}>
         <Route index element={<StudentDashboard />} />
         <Route path="my-courses" element={<DashboardMyCourses />} />
         <Route path="live-classes" element={<DashboardLiveClasses />} />
+        <Route path="assignments" element={<DashboardAssessments />} />
+        <Route path="assignments/quiz/:id" element={<QuizIntro />} />
+        <Route path="assignments/attempt/:attemptId" element={<QuizResult />} />
+        <Route path="assignments/assignment/:id" element={<AssignmentPage />} />
         <Route path=":section" element={<DashboardComingSoon />} />
       </Route>
 

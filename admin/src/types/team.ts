@@ -1,6 +1,6 @@
 /** none = hidden, view = read, edit = view + create / change, full = edit + delete */
 export type AccessLevel = 'none' | 'view' | 'edit' | 'full';
-export type ModuleKey = 'students' | 'instructors' | 'courses' | 'curriculum' | 'liveClasses';
+export type ModuleKey = 'students' | 'instructors' | 'courses' | 'curriculum' | 'assessments' | 'liveClasses';
 export type Permissions = Record<ModuleKey, AccessLevel>;
 
 /** what the signed-in admin may do (sent with /auth/me) */

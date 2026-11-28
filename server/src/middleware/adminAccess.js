@@ -38,6 +38,7 @@ const RESOURCES = {
   instructors: { module: 'instructors', noun: 'instructor' },
   courses: { module: 'courses', noun: 'course' },
   curriculum: { module: 'curriculum', noun: 'curriculum' },
+  assessments: { module: 'assessments', noun: 'assessment' },
   'live-classes': { module: 'liveClasses', noun: 'live class' },
   team: { module: 'team', noun: 'admin' },
 };
@@ -71,6 +72,7 @@ const describeRequest = (method, originalUrl) => {
     const idx = Math.max(segs.lastIndexOf('modules'), segs.lastIndexOf('lessons'));
     if (idx !== -1) noun = segs[idx] === 'modules' ? 'module' : 'lesson';
   }
+  if (segs[0] === 'assessments') noun = { quizzes: 'quiz', assignments: 'assignment', submissions: 'submission' }[segs[1]] || 'assessment';
 
   let info;
   if (segs.includes('recording')) {
@@ -80,6 +82,8 @@ const describeRequest = (method, originalUrl) => {
   } else if (segs[0] === 'courses' && segs[1] === 'upload') {
     info = { action: 'upload', verb: 'Uploaded' };
     noun = `a ${segs[2] || 'file'}`;
+  } else if (segs[0] === 'assessments' && segs[1] === 'submissions' && String(method).toUpperCase() === 'PATCH') {
+    info = { action: 'grade', verb: 'Graded' };
   } else {
     info = SPECIAL[last] || BY_METHOD[String(method).toUpperCase()] || { action: String(method).toLowerCase(), verb: 'Changed' };
   }
@@ -119,6 +123,9 @@ const labelBeforeDelete = async (info) => {
     if (info.module === 'students' || info.module === 'instructors' || info.module === 'team') return HEX24.test(id) ? (await model('User').findById(id).select('name').lean())?.name || '' : '';
     if (info.module === 'courses') return (await model('Course').findOne({ slug: id }).select('title').lean())?.title || '';
     if (info.module === 'liveClasses') return HEX24.test(id) ? (await model('LiveClass').findById(id).select('title').lean())?.title || '' : '';
+    if (info.module === 'assessments' && HEX24.test(id) && (info.noun === 'quiz' || info.noun === 'assignment')) {
+      return (await model(info.noun === 'quiz' ? 'Quiz' : 'Assignment').findById(id).select('title').lean())?.title || '';
+    }
     if (info.module === 'curriculum' && HEX24.test(id)) {
       const doc = info.noun === 'lesson' ? await model('Lesson').findById(id).select('title').lean() : await model('CourseModule').findById(id).select('title').lean();
       return doc?.title || '';

@@ -26,7 +26,7 @@ export const DASH_SIDEBAR_ITEMS: DashNavItem[] = [
   { key: 'certificates', label: 'My Certificates', to: '/dashboard/certificates', Icon: Award },
   { key: 'bookmarks', label: 'Bookmarks', to: '/dashboard/bookmarks', Icon: Bookmark },
   { key: 'notes', label: 'Notes', to: '/dashboard/notes', Icon: StickyNote },
-  { key: 'assignments', label: 'Assignments', to: '/dashboard/assignments', Icon: ClipboardList },
+  { key: 'assignments', label: 'Quizzes & Assignments', to: '/dashboard/assignments', Icon: ClipboardList },
   { key: 'community', label: 'Community', to: '/community', Icon: UsersRound },
   { key: 'settings', label: 'Settings', to: '/dashboard/settings', Icon: Settings },
 ];

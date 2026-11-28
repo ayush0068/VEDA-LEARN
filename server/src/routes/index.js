@@ -1,5 +1,6 @@
 const { Router } = require('express');
 const adminRoutes = require('./admin');
+const assessmentRoutes = require('./assessment.routes');
 const authRoutes = require('./auth.routes');
 const cartRoutes = require('./cart.routes');
 const categoryRoutes = require('./category.routes');
@@ -27,6 +28,7 @@ router.use('/newsletter', newsletterRoutes);
 router.use('/contact', contactRoutes);
 router.use('/dashboard', dashboardRoutes);
 router.use('/learn', learnRoutes);
+router.use('/assessments', assessmentRoutes);
 router.use('/live-classes', liveRoutes);
 router.use('/media', mediaRoutes);
 router.use('/profile', profileRoutes);

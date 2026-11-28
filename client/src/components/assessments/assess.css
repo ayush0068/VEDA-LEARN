@@ -1,0 +1,24 @@
+/* Quizzes & Assignments: motion. Everything here is switched off for people who ask for reduced motion (see index.css). */
+@keyframes aq-next { from { opacity: 0; transform: translateX(46px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes aq-prev { from { opacity: 0; transform: translateX(-46px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes aq-pop { 0% { transform: scale(0.85); opacity: 0; } 60% { transform: scale(1.04); opacity: 1; } 100% { transform: scale(1); } }
+@keyframes aq-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes aq-shake { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-6px); } 40% { transform: translateX(6px); } 60% { transform: translateX(-4px); } 80% { transform: translateX(4px); } }
+@keyframes aq-urgent { 0%, 100% { box-shadow: 0 0 0 0 rgba(192, 57, 43, 0.45); } 50% { box-shadow: 0 0 0 9px rgba(192, 57, 43, 0); } }
+@keyframes aq-check { from { stroke-dashoffset: 24; } to { stroke-dashoffset: 0; } }
+@keyframes aq-glow { 0%, 100% { opacity: 0.55; transform: scale(1); } 50% { opacity: 1; transform: scale(1.08); } }
+@keyframes aq-shine { from { transform: translateX(-120%); } to { transform: translateX(220%); } }
+
+.aq-next { animation: aq-next 0.34s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.aq-prev { animation: aq-prev 0.34s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.aq-pop { animation: aq-pop 0.45s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.aq-rise { animation: aq-rise 0.5s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.aq-shake { animation: aq-shake 0.45s ease-in-out; }
+.aq-urgent { animation: aq-urgent 1s ease-in-out infinite; }
+.aq-check path { stroke-dasharray: 24; animation: aq-check 0.35s 0.05s ease-out both; }
+.aq-glow { animation: aq-glow 2.6s ease-in-out infinite; }
+.aq-shine { position: relative; overflow: hidden; }
+.aq-shine::after { content: ''; position: absolute; inset: 0; width: 40%; background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.55), transparent); animation: aq-shine 2.8s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .aq-next, .aq-prev, .aq-pop, .aq-rise, .aq-shake, .aq-urgent, .aq-check path, .aq-glow, .aq-shine::after { animation: none !important; }
+}

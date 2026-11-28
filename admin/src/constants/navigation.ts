@@ -55,7 +55,7 @@ export const NAV_GROUPS: NavGroup[] = [
       { label: 'Courses', to: '/courses', icon: BookOpen, module: 'courses' },
       { label: 'Categories', to: '/categories', icon: LayoutGrid },
       { label: 'Modules & Lessons', to: '/modules-lessons', icon: Layers, module: 'curriculum' },
-      { label: 'Quizzes & Assignments', to: '/quizzes-assignments', icon: ClipboardCheck },
+      { label: 'Quizzes & Assignments', to: '/quizzes-assignments', icon: ClipboardCheck, module: 'assessments' },
       { label: 'Certificates', to: '/certificates', icon: Award },
     ],
   },

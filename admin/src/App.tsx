@@ -11,6 +11,10 @@ import LiveClasses from '@/pages/LiveClasses';
 import LiveRoomHost from '@/pages/LiveRoomHost';
 import Login from '@/pages/Login';
 import ModulesLessons from '@/pages/ModulesLessons';
+import AssignmentSubmissions from '@/pages/AssignmentSubmissions';
+import QuizBuilder from '@/pages/QuizBuilder';
+import QuizResults from '@/pages/QuizResults';
+import QuizzesAssignments from '@/pages/QuizzesAssignments';
 import Students from '@/pages/Students';
 
 type GuardProps = Parameters<typeof RequirePermission>[0];
@@ -51,6 +55,10 @@ export default function App() {
         <Route path="live-classes" element={<Guard module="liveClasses"><LiveClasses /></Guard>} />
         <Route path="modules-lessons" element={<Guard module="curriculum"><ModulesLessons /></Guard>} />
         <Route path="modules-lessons/:slug" element={<Guard module="curriculum"><ModulesLessons /></Guard>} />
+        <Route path="quizzes-assignments" element={<Guard module="assessments"><QuizzesAssignments /></Guard>} />
+        <Route path="quizzes-assignments/quiz/:id" element={<Guard module="assessments"><QuizBuilder /></Guard>} />
+        <Route path="quizzes-assignments/quiz/:id/results" element={<Guard module="assessments"><QuizResults /></Guard>} />
+        <Route path="quizzes-assignments/assignment/:id" element={<Guard module="assessments"><AssignmentSubmissions /></Guard>} />
         {/* only the super admin: add / remove admins, choose what each may do, watch what they do */}
         <Route path="admins-roles" element={<RequirePermission superOnly><AdminsRoles /></RequirePermission>} />
         {/* every other sidebar item opens a placeholder until its screen is built */}

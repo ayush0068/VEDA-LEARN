@@ -3,6 +3,7 @@ const { protect, restrictTo } = require('../../middleware/auth');
 const { requireAnyPermission, requirePermission, requireSuper, trackAdmin } = require('../../middleware/adminAccess');
 const { createRateLimiter } = require('../../middleware/rateLimit');
 const { upload } = require('../../controllers/adminUpload.controller');
+const assessmentRoutes = require('./assessments.routes');
 const courseRoutes = require('./courses.routes');
 const curriculumRoutes = require('./curriculum.routes');
 const liveRoutes = require('./live.routes');
@@ -24,6 +25,7 @@ router.use('/instructors', requirePermission('instructors'), instructorRoutes);
 router.post('/courses/upload/:kind', requireAnyPermission(['courses', 'curriculum'], { level: 'edit' }), upload);
 router.use('/courses', requirePermission('courses'), courseRoutes);
 router.use('/curriculum', requirePermission('curriculum'), curriculumRoutes);
+router.use('/assessments', requirePermission('assessments'), assessmentRoutes);
 router.use('/live-classes', requirePermission('liveClasses'), liveRoutes);
 
 // Admins & Roles: the super admin only
